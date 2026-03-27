@@ -1,3 +1,4 @@
+/* fileName: style.css */
 :root {
   --bg:#1a1a1e; --bg-secondary:#242428; --bg-hover:#35353d; --surface:#2a2a30; --surface-raised:#323238; 
   --border:rgba(255,255,255,0.1); --border-strong:rgba(255,255,255,0.14); --text:#f2f2f7; 
@@ -140,16 +141,13 @@ textarea:focus { border-color:var(--border-strong); }
 .fp-row { display:flex; align-items:center; gap:8px; }
 .fp-input-group { display:flex; align-items:center; background:var(--surface); border:1px solid var(--border-strong); border-radius:6px; padding:6px 10px; flex:1; transition:0.15s; }
 .fp-input-group:focus-within { border-color:var(--accent); background:var(--surface-raised); }
-
-/* External Labeling Additions */
-.fp-labeled-input { display:flex; flex-direction:column; gap:4px; flex:1; }
-.fp-labeled-input .fp-scrub { font-size:11px; font-weight:600; color:var(--text-secondary); text-align:left; padding:0; justify-content:flex-start; width: 100%; display:inline-block; }
-.fp-labeled-input .fp-scrub:hover { color:var(--text); }
+.fp-scrub { font-size:12px; font-weight:700; color:var(--text-tertiary); cursor:ew-resize; padding-right:8px; user-select:none; }
+.fp-scrub:hover { color:var(--text); }
 
 .fp-input { background:transparent; border:none; color:var(--text); width:100%; font-family:monospace; font-size:13px; outline:none; -moz-appearance:textfield; caret-color:transparent; }
 .fp-input::-webkit-outer-spin-button, .fp-input::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
 
-.fp-lock { display:flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:6px; color:var(--text-secondary); cursor:pointer; transition:0.15s; background:var(--surface-raised); border:1px solid transparent; flex-shrink:0; margin-top: 15px; }
+.fp-lock { display:flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:6px; color:var(--text-secondary); cursor:pointer; transition:0.15s; background:var(--surface-raised); border:1px solid transparent; flex-shrink:0; }
 .fp-lock:hover { color:var(--text); background:var(--bg-hover); border-color:var(--border-strong); }
 .fp-lock.is-unlocked { color:var(--text-tertiary); opacity:0.6; }
 
@@ -162,11 +160,6 @@ textarea:focus { border-color:var(--border-strong); }
 .fp-link-btn-standalone.is-unlinked { color:var(--text-tertiary); opacity:0.6; }
 .fp-link-btn-standalone:hover { color:var(--text); opacity:1; transform:scale(1.1); }
 .fp-divider-line { flex:1; height:1px; background:var(--border-strong); }
-
-/* Segmented Control Buttons */
-.cp-segment-bar { display:flex; background:var(--surface-raised); border-radius:6px; padding:2px; border:1px solid var(--border-strong); }
-.cp-segment-btn { flex:1; display:flex; align-items:center; justify-content:center; padding:6px 0; color:var(--text-secondary); cursor:pointer; border-radius:4px; transition:0.15s; }
-.cp-segment-btn:hover { background:var(--bg-hover); color:var(--text); }
 
 .fp-footer { padding:14px 18px; background:var(--bg-secondary); border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:10px; }
 

@@ -3,14 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SVG Optimizer Utility — Layer Editor</title>
+<link rel="apple-touch-icon" href="IOS-icon.png">
+<title>SVG HTML/Web Optimizer</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body class="mode-mono">
 
   <iframe id="cpIframe" src="colorPicker.html" style="position: fixed; inset: 0; width: 100%; height: 100%; border: none; z-index: 9999; background: transparent; pointer-events: none;"></iframe>
 
-  <div id="resizePanel" class="floating-panel" style="width: 420px;">
+  <div id="resizePanel" class="floating-panel">
     <div class="fp-header" id="resizePanelHeader">
        <div class="fp-title">Edit Dimensions</div>
        <div class="fp-header-actions">
@@ -23,21 +24,12 @@
        <div class="fp-section">
           <div class="fp-section-header">
              <div class="fp-section-title">Artboard (ViewBox)</div>
-             <div style="display:flex; gap:8px; align-items:center;">
-                 <button class="opt-btn" onclick="fitToBounds()" style="padding: 4px 8px; font-size: 10px;">Clip to Ink Bounds</button>
-                 <div class="fp-reset-btn inline" onclick="resetDimensions('ab')" title="Reset Artboard Dimensions"><svg class="icon-svg"><use href="#icon-reset" xlink:href="#icon-reset"></use></svg></div>
-             </div>
+             <div class="fp-reset-btn inline" onclick="resetDimensions('ab')" title="Reset Artboard Dimensions"><svg class="icon-svg"><use href="#icon-reset" xlink:href="#icon-reset"></use></svg></div>
           </div>
           <div class="fp-row">
-             <div class="fp-labeled-input">
-                 <span class="fp-scrub" id="scrubAbW">Width:</span>
-                 <div class="fp-input-group"><input type="number" id="inpAbW" class="fp-input"></div>
-             </div>
+             <div class="fp-input-group"><span class="fp-scrub" id="scrubAbW">W</span><input type="number" id="inpAbW" class="fp-input"></div>
              <div class="fp-lock" id="btnLockAb" onclick="toggleLock('ab')" title="Lock Aspect Ratio"><svg class="icon-svg"><use href="#icon-lock" xlink:href="#icon-lock"></use></svg></div>
-             <div class="fp-labeled-input">
-                 <span class="fp-scrub" id="scrubAbH">Height:</span>
-                 <div class="fp-input-group"><input type="number" id="inpAbH" class="fp-input"></div>
-             </div>
+             <div class="fp-input-group"><span class="fp-scrub" id="scrubAbH">H</span><input type="number" id="inpAbH" class="fp-input"></div>
           </div>
        </div>
 
@@ -55,56 +47,19 @@
              <div class="fp-reset-btn inline" onclick="resetDimensions('ink')" title="Reset Ink Dimensions"><svg class="icon-svg"><use href="#icon-reset" xlink:href="#icon-reset"></use></svg></div>
           </div>
           <div class="fp-row">
-             <div class="fp-labeled-input">
-                 <span class="fp-scrub" id="scrubInkX">X Position:</span>
-                 <div class="fp-input-group"><input type="number" id="inpInkX" class="fp-input"></div>
-             </div>
-             <div class="fp-lock" style="opacity:0; pointer-events:none;"><svg class="icon-svg"><use href="#icon-lock"></use></svg></div>
-             <div class="fp-labeled-input">
-                 <span class="fp-scrub" id="scrubInkY">Y Position:</span>
-                 <div class="fp-input-group"><input type="number" id="inpInkY" class="fp-input"></div>
-             </div>
-          </div>
-          <div class="fp-row" style="margin-top:4px;">
-             <div class="fp-labeled-input">
-                 <span class="fp-scrub" id="scrubInkW">Width:</span>
-                 <div class="fp-input-group"><input type="number" id="inpInkW" class="fp-input"></div>
-             </div>
+             <div class="fp-input-group"><span class="fp-scrub" id="scrubInkW">W</span><input type="number" id="inpInkW" class="fp-input"></div>
              <div class="fp-lock" id="btnLockInk" onclick="toggleLock('ink')" title="Lock Aspect Ratio"><svg class="icon-svg"><use href="#icon-lock" xlink:href="#icon-lock"></use></svg></div>
-             <div class="fp-labeled-input">
-                 <span class="fp-scrub" id="scrubInkH">Height:</span>
-                 <div class="fp-input-group"><input type="number" id="inpInkH" class="fp-input"></div>
-             </div>
+             <div class="fp-input-group"><span class="fp-scrub" id="scrubInkH">H</span><input type="number" id="inpInkH" class="fp-input"></div>
           </div>
        </div>
        
        <div class="fp-section" style="margin-top: 6px;">
-          <div class="fp-section-header">
-              <div class="fp-section-title">Alignment & Adjustments</div>
-          </div>
-          <div class="fp-row" style="margin-bottom: 6px;">
-             <div class="cp-segment-bar" style="flex:1;">
-                 <div class="cp-segment-btn" onclick="alignCenter('h')" title="Align Horizontally"><svg class="icon-svg"><use href="#icon-align-horizontal-center"></use></svg></div>
-                 <div class="cp-segment-btn" onclick="alignCenter('v')" title="Align Vertically"><svg class="icon-svg"><use href="#icon-align-vertical-center"></use></svg></div>
-             </div>
-             <div class="cp-segment-bar" style="flex:1;">
-                 <div class="cp-segment-btn" onclick="flipInk('h')" title="Flip Horizontal"><svg class="icon-svg"><use href="#icon-flip-horizontal"></use></svg></div>
-                 <div class="cp-segment-btn" onclick="flipInk('v')" title="Flip Vertical"><svg class="icon-svg"><use href="#icon-flip-vertical"></use></svg></div>
-             </div>
-          </div>
-
+          <div class="fp-section-title">Alignment & Fit</div>
           <div class="fp-row">
-             <div class="fp-labeled-input" style="flex: 1.5;">
-                 <span class="fp-scrub" id="scrubRotation">Rotation:</span>
-                 <div class="fp-input-group" style="padding-right: 4px;">
-                    <input type="number" id="inpRotation" class="fp-input" value="0">
-                    <span class="cp-unit" style="font-size: 13px;">°</span>
-                 </div>
-             </div>
-             <button class="icon-btn" onclick="rotateInk(90)" title="Rotate 90°" style="margin-top:19px; width: 34px; height: 34px;"><svg class="icon-svg"><use href="#icon-rotate-90"></use></svg></button>
-             <div class="slider-trigger rotate" id="btnRotateSlider" title="Adjust Rotation" style="margin-top:19px; width: 34px; height: 34px;"><svg class="icon-svg"><use href="#icon-slider-horizontal"></use></svg></div>
+             <button class="icon-btn" onclick="alignCenter('h')" title="Align Horizontal Center"><svg class="icon-svg"><use href="#icon-align-horizontal-center" xlink:href="#icon-align-horizontal-center"></use></svg></button>
+             <button class="icon-btn" onclick="alignCenter('v')" title="Align Vertical Center"><svg class="icon-svg"><use href="#icon-align-vertical-center" xlink:href="#icon-align-vertical-center"></use></svg></button>
+             <button class="opt-btn" onclick="fitToBounds()" title="Fit Artboard to Ink Bounds" style="margin-left: auto;">Fit to Bounds</button>
           </div>
-          <div style="font-size: 10px; color: var(--text-tertiary); text-align: center; margin-top: 2px;">Transforms originate from the center of the ink bounds</div>
        </div>
 
     </div>

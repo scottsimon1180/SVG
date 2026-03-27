@@ -15,7 +15,6 @@ let isAbLocked = true, isInkLocked = true, isLinked = true;
 let resizeState = { 
     baseW: 0, baseH: 0, baseX: 0, baseY: 0, 
     abW: 0, abH: 0, inkW: 0, inkH: 0, inkX: 0, inkY: 0,
-    rotation: 0, flipX: 1, flipY: 1,
     origAbW: 0, origAbH: 0, origInkW: 0, origInkH: 0, origInkX: 0, origInkY: 0 
 };
 let resizeHistory = [];
@@ -82,7 +81,7 @@ if (!opPopup) {
         if (opPopup.style.display === 'flex' && !opPopup.contains(e.target) && !e.target.closest('.slider-trigger.op')) {
             opPopup.style.display = 'none';
         }
-        if (strokePopup.style.display === 'flex' && !strokePopup.contains(e.target) && !e.target.closest('.slider-trigger.stroke') && !e.target.closest('.slider-trigger.rotate')) {
+        if (strokePopup.style.display === 'flex' && !strokePopup.contains(e.target) && !e.target.closest('.slider-trigger.stroke')) {
             strokePopup.style.display = 'none';
         }
         if (!e.target.closest('.slider-trigger')) {
@@ -582,7 +581,7 @@ const buildLayersPanel = () => {
         const opInp = createEl('input', 'cp-op-input', { 
             type: 'number', value: Math.round(opParsed), min: 0, max: 100, 
             oninput: e => {
-                if (e.target.value === '') return; 
+                if (e.target.value === '') return;
                 let parsed = parseInt(e.target.value);
                 if (isNaN(parsed)) return;
                 let v = Math.min(100, Math.max(0, parsed));
@@ -635,7 +634,7 @@ const buildLayersPanel = () => {
                     opInp.dispatchEvent(new Event('input'));
                 };
                 range.onchange = () => {
-                    opInp.dispatchEvent(new Event('blur')); 
+                    opInp.dispatchEvent(new Event('blur')); // Finalize export output
                 };
             }
         });
@@ -716,7 +715,7 @@ const buildLayersPanel = () => {
                                 dragging = false; range.value = 0; 
                                 if (updateRaf) cancelAnimationFrame(updateRaf); 
                                 updateRaf = requestAnimationFrame(() => renderOutput(false)); 
-                                sizeInp.dispatchEvent(new Event('blur')); 
+                                sizeInp.dispatchEvent(new Event('blur')); // Finalize state
                             }
                             window.removeEventListener('pointerup', handleStop); window.removeEventListener('pointercancel', handleStop);
                         };
@@ -894,14 +893,10 @@ window.downloadSVG = async () => {
 // ==========================================
 const updateResizeInputs = () => {
     const setVal = (el, val) => { if (document.activeElement !== el) el.value = Number(val.toFixed(2)); };
-    
     setVal($('inpAbW'), resizeState.abW);
     setVal($('inpAbH'), resizeState.abH);
     setVal($('inpInkW'), resizeState.inkW);
     setVal($('inpInkH'), resizeState.inkH);
-    setVal($('inpInkX'), resizeState.inkX);
-    setVal($('inpInkY'), resizeState.inkY);
-    setVal($('inpRotation'), resizeState.rotation);
 
     $('btnLockAb').innerHTML = `<svg class="icon-svg"><use href="#icon-${isAbLocked ? 'lock' : 'unlock'}" xlink:href="#icon-${isAbLocked ? 'lock' : 'unlock'}"></use></svg>`;
     $('btnLockAb').className = `fp-lock ${isAbLocked ? '' : 'is-unlocked'}`;
@@ -912,41 +907,16 @@ const updateResizeInputs = () => {
 };
 
 const applyResizeMath = (isScrubbing = true) => {
-    
-    // 1. Calculate raw scales based on the width/height sizes
-    let rawSx = Number((resizeState.baseW === 0 ? 1 : resizeState.inkW / resizeState.baseW).toFixed(4));
-    let rawSy = Number((resizeState.baseH === 0 ? 1 : resizeState.inkH / resizeState.baseH).toFixed(4));
-    
-    // 2. Incorporate the Flip flags
-    let sx = rawSx * resizeState.flipX;
-    let sy = rawSy * resizeState.flipY;
-    
-    // 3. Find the visual center of the mapped ink bounding box
-    let cx = resizeState.inkX + (resizeState.inkW / 2);
-    let cy = resizeState.inkY + (resizeState.inkH / 2);
-    
-    // 4. Calculate translation mapping for the top-left corner
-    let tx = Number((resizeState.inkX - (resizeState.baseX * Math.abs(sx))).toFixed(4));
-    let ty = Number((resizeState.inkY - (resizeState.baseY * Math.abs(sy))).toFixed(4));
+    let sx = Number((resizeState.baseW === 0 ? 1 : resizeState.inkW / resizeState.baseW).toFixed(4));
+    let sy = Number((resizeState.baseH === 0 ? 1 : resizeState.inkH / resizeState.baseH).toFixed(4));
+    let tx = Number((resizeState.inkX - (resizeState.baseX * sx)).toFixed(4));
+    let ty = Number((resizeState.inkY - (resizeState.baseY * sy)).toFixed(4));
     
     let wrapper = globalOptimizedSvg.querySelector('g#ink-wrapper');
     if (wrapper) {
-        wrapper.setAttribute('data-pf-sx', Math.abs(sx)); 
-        wrapper.setAttribute('data-pf-sy', Math.abs(sy));
-        wrapper.setAttribute('data-pf-tx', tx); 
-        wrapper.setAttribute('data-pf-ty', ty);
-        
-        // Matrix Build: Map bounds -> Rotate from center -> Flip -> Finalize
-        let transformStr = `
-            translate(${cx}, ${cy}) 
-            rotate(${resizeState.rotation}) 
-            scale(${resizeState.flipX}, ${resizeState.flipY}) 
-            translate(${-cx}, ${-cy}) 
-            translate(${tx}, ${ty}) 
-            scale(${Math.abs(sx)}, ${Math.abs(sy)})
-        `.replace(/\s+/g, ' ').trim();
-        
-        wrapper.setAttribute('transform', transformStr);
+        wrapper.setAttribute('data-pf-sx', sx); wrapper.setAttribute('data-pf-sy', sy);
+        wrapper.setAttribute('data-pf-tx', tx); wrapper.setAttribute('data-pf-ty', ty);
+        wrapper.setAttribute('transform', `translate(${tx}, ${ty}) scale(${sx}, ${sy})`);
     }
     
     let abW = Number(resizeState.abW.toFixed(2));
@@ -975,9 +945,6 @@ window.resetDimensions = (type) => {
         resizeState.inkH = resizeState.origInkH;
         resizeState.inkX = resizeState.origInkX;
         resizeState.inkY = resizeState.origInkY;
-        resizeState.rotation = 0;
-        resizeState.flipX = 1;
-        resizeState.flipY = 1;
     }
     updateResizeInputs();
     applyResizeMath(false);
@@ -995,20 +962,6 @@ window.fitToBounds = () => {
     resizeState.abW = resizeState.inkW; resizeState.abH = resizeState.inkH;
     resizeState.inkX = 0; resizeState.inkY = 0;
     updateResizeInputs(); applyResizeMath(false);
-    saveResizeState();
-};
-
-window.flipInk = (axis) => {
-    if (axis === 'h') resizeState.flipX *= -1;
-    else resizeState.flipY *= -1;
-    applyResizeMath(false);
-    saveResizeState();
-};
-
-window.rotateInk = (deg) => {
-    resizeState.rotation = (resizeState.rotation + deg) % 360;
-    updateResizeInputs();
-    applyResizeMath(false);
     saveResizeState();
 };
 
@@ -1054,9 +1007,6 @@ window.openResizePanel = () => {
     resizeState.inkW = resizeState.baseW * sx; resizeState.inkH = resizeState.baseH * sy;
     resizeState.inkX = (resizeState.baseX * sx) + tx - abX; 
     resizeState.inkY = (resizeState.baseY * sy) + ty - abY;
-    resizeState.rotation = 0;
-    resizeState.flipX = 1;
-    resizeState.flipY = 1;
 
     resizeState.origAbW = resizeState.abW;
     resizeState.origAbH = resizeState.abH;
@@ -1071,7 +1021,7 @@ window.openResizePanel = () => {
 
     updateResizeInputs();
     $('resizePanel').style.display = 'flex';
-    saveResizeState(); 
+    saveResizeState(); // Push initial state to history
 };
 
 window.cancelResize = () => {
@@ -1092,52 +1042,44 @@ const initPanelInputs = () => {
         inp.addEventListener('blur', function() { this.classList.remove('app-input-grey'); isFirstType = false; window.getSelection().removeAllRanges(); });
     };
 
-    const sync = (id, field, isAb, isW, isPos) => {
+    const sync = (id, field, isAb, isW) => {
         let inputEl = $(id);
-        if(!inputEl) return;
         setupAppLikeInput(inputEl);
         
         inputEl.addEventListener('input', e => {
             if (e.target.value === '') return; 
             let val = parseFloat(e.target.value); 
-            if (isNaN(val)) return;
+            if (isNaN(val) || val <= 0.01) return;
             
-            // X, Y, and Rotation bypass ratio scaling logic
-            if (isPos) {
-                resizeState[field] = val;
+            let oldVal = resizeState[field];
+            let ratio = val / oldVal;
+            
+            if (isLinked) {
+                resizeState.abW *= ratio;
+                resizeState.abH *= ratio;
+                resizeState.inkW *= ratio;
+                resizeState.inkH *= ratio;
+                resizeState.inkX *= ratio;
+                resizeState.inkY *= ratio;
             } else {
-                if (val <= 0.01) return;
-                let oldVal = resizeState[field];
-                let ratio = val / oldVal;
-                
-                if (isLinked) {
-                    resizeState.abW *= ratio;
-                    resizeState.abH *= ratio;
-                    resizeState.inkW *= ratio;
-                    resizeState.inkH *= ratio;
-                    resizeState.inkX *= ratio;
-                    resizeState.inkY *= ratio;
-                } else {
-                    if (isAb) {
-                        resizeState[field] = val;
-                        if (isAbLocked) {
-                            if (isW) resizeState.abH *= ratio;
-                            else resizeState.abW *= ratio;
-                        }
-                    } else {
-                        let oldInkW = resizeState.inkW;
-                        let oldInkH = resizeState.inkH;
-                        
-                        resizeState[field] = val;
-                        if (isInkLocked) {
-                            if (isW) resizeState.inkH *= ratio;
-                            else resizeState.inkW *= ratio;
-                        }
-                        
-                        // Maintain center registration when scaling bounds
-                        resizeState.inkX -= (resizeState.inkW - oldInkW) / 2;
-                        resizeState.inkY -= (resizeState.inkH - oldInkH) / 2;
+                if (isAb) {
+                    resizeState[field] = val;
+                    if (isAbLocked) {
+                        if (isW) resizeState.abH *= ratio;
+                        else resizeState.abW *= ratio;
                     }
+                } else {
+                    let oldInkW = resizeState.inkW;
+                    let oldInkH = resizeState.inkH;
+                    
+                    resizeState[field] = val;
+                    if (isInkLocked) {
+                        if (isW) resizeState.inkH *= ratio;
+                        else resizeState.inkW *= ratio;
+                    }
+                    
+                    resizeState.inkX -= (resizeState.inkW - oldInkW) / 2;
+                    resizeState.inkY -= (resizeState.inkH - oldInkH) / 2;
                 }
             }
             updateResizeInputs(); applyResizeMath(true);
@@ -1152,32 +1094,19 @@ const initPanelInputs = () => {
         });
     };
 
-    sync('inpAbW', 'abW', true, true, false); 
-    sync('inpAbH', 'abH', true, false, false);
-    sync('inpInkW', 'inkW', false, true, false); 
-    sync('inpInkH', 'inkH', false, false, false);
-    sync('inpInkX', 'inkX', false, false, true); 
-    sync('inpInkY', 'inkY', false, false, true);
-    sync('inpRotation', 'rotation', false, false, true);
+    sync('inpAbW', 'abW', true, true); sync('inpAbH', 'abH', true, false);
+    sync('inpInkW', 'inkW', false, true); sync('inpInkH', 'inkH', false, false);
 
-    const makeScrub = (scrubId, inpId, multiplier = 0.5) => {
+    const makeScrub = (scrubId, inpId) => {
         let el = $(scrubId), inp = $(inpId), isDragging = false, startX, startVal, scrubRaf;
-        if (!el || !inp) return;
         el.addEventListener('pointerdown', e => {
             isDragging = true; startX = e.clientX; startVal = parseFloat(inp.value) || 0;
             document.body.classList.add('is-dragging-ew'); el.setPointerCapture(e.pointerId);
         });
         el.addEventListener('pointermove', e => {
             if (!isDragging) return;
-            let delta = (e.clientX - startX) * multiplier;
-            // Rotation can be negative, dimensions cannot
-            if (inpId === 'inpRotation') {
-                inp.value = (startVal + delta).toFixed(2);
-            } else if (inpId === 'inpInkX' || inpId === 'inpInkY') {
-                inp.value = (startVal + delta).toFixed(2);
-            } else {
-                inp.value = Math.max(0.1, startVal + delta).toFixed(2);
-            }
+            let delta = (e.clientX - startX) * 0.5;
+            inp.value = Math.max(0.1, startVal + delta).toFixed(2);
             if (scrubRaf) cancelAnimationFrame(scrubRaf);
             scrubRaf = requestAnimationFrame(() => inp.dispatchEvent(new Event('input')));
         });
@@ -1192,56 +1121,8 @@ const initPanelInputs = () => {
         };
         el.addEventListener('pointerup', stop); el.addEventListener('pointercancel', stop);
     };
-    
     makeScrub('scrubAbW', 'inpAbW'); makeScrub('scrubAbH', 'inpAbH');
     makeScrub('scrubInkW', 'inpInkW'); makeScrub('scrubInkH', 'inpInkH');
-    makeScrub('scrubInkX', 'inpInkX'); makeScrub('scrubInkY', 'inpInkY');
-    makeScrub('scrubRotation', 'inpRotation', 1.0);
-
-    // Slider Popup for Rotation
-    const rotateTrigger = $('btnRotateSlider');
-    if (rotateTrigger) {
-        rotateTrigger.addEventListener('click', e => {
-            e.stopPropagation();
-            document.querySelectorAll('.slider-trigger').forEach(el => el.classList.remove('is-active'));
-            rotateTrigger.classList.add('is-active');
-
-            const rect = rotateTrigger.getBoundingClientRect();
-            strokePopup.style.display = 'flex';
-            
-            let leftPos = rect.left + (rect.width / 2) - 70;
-            if (leftPos + 140 > window.innerWidth) leftPos = window.innerWidth - 150;
-            if (leftPos < 10) leftPos = 10;
-            
-            strokePopup.style.left = `${leftPos}px`;
-            strokePopup.style.top = `${rect.top - 44}px`; 
-
-            const range = strokePopup.querySelector('input');
-            range.value = 0; 
-            let dragBase = 0, dragging = false;
-
-            range.onpointerdown = () => {
-                dragging = true; dragBase = parseFloat($('inpRotation').value) || 0;
-                const handleStop = () => {
-                    if (dragging) { 
-                        dragging = false; range.value = 0; 
-                        applyResizeMath(false); 
-                        saveResizeState();
-                        $('inpRotation').dispatchEvent(new Event('blur')); 
-                    }
-                    window.removeEventListener('pointerup', handleStop); window.removeEventListener('pointercancel', handleStop);
-                };
-                window.addEventListener('pointerup', handleStop); window.addEventListener('pointercancel', handleStop);
-            };
-
-            range.oninput = ev => {
-                if (!dragging) return;
-                // Range value is -1 to 1. Multiply by 180 to allow a full 180deg scrub in either direction
-                let v = Number((dragBase + (parseFloat(ev.target.value) * 180)).toFixed(2));
-                $('inpRotation').value = v; $('inpRotation').dispatchEvent(new Event('input'));
-            };
-        });
-    }
 
     const header = $('resizePanelHeader'), panel = $('resizePanel');
     let isDraggingWin = false, sX, sY, sL, sT;
