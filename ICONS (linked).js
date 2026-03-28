@@ -1,4 +1,3 @@
-/* fileName: ICONS (linked).js */
 // To update UI icons, simply paste your raw <svg>...</svg> code under the respective comment block.
 // DO NOT remove the backtick ( ` ) at the very top and very bottom of this list!
 
@@ -105,15 +104,6 @@ paste
 
 /*
 =======================================
-redo
-=======================================
-*/
-
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.4,10.6C16.55,8.99,14.15,8,11.5,8c-4.32,0-7.98,2.73-9.47,6.72l2.37,0.78c1.05-3.19,4.06-5.5,7.6-5.5c1.95,0,3.73,0.72,5.12,1.88L13.5,16h9V7L18.4,10.6z" fill="currentColor" stroke="none"/></svg>
-
-
-/*
-=======================================
 refresh
 =======================================
 */
@@ -159,15 +149,6 @@ slider-vertical
 
 /*
 =======================================
-undo
-=======================================
-*/
-
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12.5,8c-2.65,0-5.05,0.99-6.9,2.6L2,7v9h9l-3.62-3.62c1.39-1.16,3.16-1.88,5.12-1.88c3.54,0,6.55,2.31,7.6,5.5l2.37-0.78C20.48,10.73,16.82,8,12.5,8z" fill="currentColor" stroke="none"/></svg>
-
-
-/*
-=======================================
 unlinked-layers
 =======================================
 */
@@ -190,67 +171,4 @@ zoom-fit
 =======================================
 */
 
-	<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 24 24"><g id="Layer_2"><g><path d="M5.31,22h13.37c2.2,0,3.32-1.11,3.32-3.28V5.28C22,3.11,20.89,2,18.68,2H5.31C3.11,2,2,3.11,2,5.28v13.44C2,20.9,3.11,22,5.31,22zM5.34,20.49c-1.19,0-1.84-0.63-1.84-1.85V5.36c0-1.22,0.65-1.85,1.84-1.85h13.31c1.17,0,1.84,0.64,1.84,1.85v13.28c0,1.23-0.67,1.85-1.84,1.85H5.34z" fill="currentColor" stroke="none"/><path d="M7.29,11.82c0.37,0,0.67-0.3,0.67-0.66v-0.61l-0.09-1.8l2.54,2.65c0.28,0.3,0.72,0.29,1,0.01c0.27-0.27,0.26-0.73-0.01-1L8.77,7.86l1.73,0.09l0.65,0.01c0.37,0,0.67-0.31,0.67-0.67c0-0.37-0.3-0.66-0.67-0.66H7.39c-0.48,0-0.77,0.22-0.77,0.77v3.77C6.63,11.52,6.93,11.82,7.29,11.82zM12.86,17.38h3.75c0.48,0,0.77-0.22,0.77-0.77v-3.76c0-0.37-0.31-0.67-0.67-0.67c-0.37,0-0.66,0.3-0.66,0.67v0.61l0.09,1.8l-2.54-2.65c-0.28-0.3-0.73-0.29-1.01-0.01c-0.27,0.28-0.26,0.74,0.01,1l2.64,2.54l-1.73-0.09l-0.65-0.01c-0.37,0-0.67,0.3-0.67,0.66C12.19,17.08,12.49,17.38,12.86,17.38z" fill="currentColor" stroke="none"/></g></g></svg>
-
-
-/*
-=======================================
-zoom-size
-=======================================
-*/
-
-	<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 24 24"><g id="Layer_2"><g><path d="M5.31,22h13.37c2.2,0,3.32-1.11,3.32-3.28V5.28C22,3.11,20.89,2,18.68,2H5.31C3.11,2,2,3.11,2,5.28v13.44C2,20.9,3.11,22,5.31,22zM5.34,20.49c-1.19,0-1.84-0.63-1.84-1.85V5.36c0-1.22,0.65-1.85,1.84-1.85h13.31c1.17,0,1.84,0.64,1.84,1.85v13.28c0,1.23-0.67,1.85-1.84,1.85H5.34z" fill="currentColor" stroke="none"/><path d="M7.27,11.77h3.76c0.48,0,0.77-0.23,0.77-0.77V7.24c0-0.37-0.3-0.67-0.66-0.67c-0.37,0-0.67,0.3-0.67,0.67v0.61l0.09,1.8L7.54,6.53c-0.28-0.29-0.73-0.29-1-0.01c-0.28,0.27-0.27,0.73,0.01,1l3.1,3.01l-1.72-0.09H7.27c-0.37,0-0.66,0.3-0.66,0.66C6.6,11.48,6.9,11.77,7.27,11.77zM12.88,17.4c0.37,0,0.66-0.3,0.66-0.66v-0.61l-0.09-1.8l3.01,3.12c0.28,0.29,0.73,0.29,1,0.01s0.26-0.74-0.01-1l-3.1-3l1.73,0.09l0.65,0.01c0.37,0,0.67-0.3,0.67-0.67c0-0.37-0.3-0.66-0.67-0.66h-3.75c-0.48,0-0.77,0.22-0.77,0.77v3.77C12.21,17.1,12.51,17.4,12.88,17.4z" fill="currentColor" stroke="none"/></g></g></svg>
-
-
-`; // DO NOT REMOVE THIS CLOSING BACKTICK!
-
-
-// =========================================================================
-// SMART INJECTION ENGINE
-// Do not edit below this line.
-// This script automatically reads your formatting above, extracts the names,
-// and injects them as fully functional <symbol> tags so your UI can use them.
-// =========================================================================
-(() => {
-    const masterSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    
-    // Instead of display: none, use absolute positioning to hide it from the visual layout
-    // but keep it in the DOM tree so that WebKit browsers parse the symbols properly.
-    masterSvg.style.position = 'absolute';
-    masterSvg.style.width = '0';
-    masterSvg.style.height = '0';
-    masterSvg.style.overflow = 'hidden';
-    masterSvg.setAttribute('aria-hidden', 'true');
-    
-    // Split the raw string using the formatted comment blocks
-    // This allows anywhere from 10 to 50 equal signs just in case of typos
-    const parts = rawIconsData.split(/\/\*\s*={10,50}\s*([a-zA-Z0-9_-]+)\s*={10,50}\s*\*\//);
-    
-    for (let i = 1; i < parts.length; i += 2) {
-        const iconName = parts[i].trim();
-        const iconHTML = parts[i + 1];
-        
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = iconHTML.trim();
-        const parsedSvg = tempDiv.querySelector('svg');
-        
-        if (parsedSvg) {
-            const symbol = document.createElementNS("http://www.w3.org/2000/svg", "symbol");
-            symbol.id = 'icon-' + iconName;
-            
-            if (parsedSvg.hasAttribute('viewBox')) {
-                symbol.setAttribute('viewBox', parsedSvg.getAttribute('viewBox'));
-            } else {
-                symbol.setAttribute('viewBox', '0 0 24 24'); // Fallback if missing
-            }
-            
-            // Move all internal paths/groups over to the symbol
-            while (parsedSvg.firstChild) {
-                symbol.appendChild(parsedSvg.firstChild);
-            }
-            masterSvg.appendChild(symbol);
-        }
-    }
-    
-    document.body.insertAdjacentElement('afterbegin', masterSvg);
-})();
+	<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 24 24"><g id="Layer_2"><g><path d="M5.31,22h13.37c2.2,0,3.32-1.11,3.32-3.28V5.28C22,3.11,20.89,2,18.68,2H5.3

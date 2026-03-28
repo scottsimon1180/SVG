@@ -3,69 +3,78 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="apple-touch-icon" href="IOS-icon.png">
-<title>SVG HTML/Web Optimizer</title>
+<title>SVG Optimizer Utility — Layer Editor</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body class="mode-mono">
 
   <iframe id="cpIframe" src="colorPicker.html" style="position: fixed; inset: 0; width: 100%; height: 100%; border: none; z-index: 9999; background: transparent; pointer-events: none;"></iframe>
 
-  <div id="resizePanel" class="floating-panel">
-    <div class="fp-header" id="resizePanelHeader">
-       <div class="fp-title">Edit Dimensions</div>
-       <div class="fp-header-actions">
-          <div class="fp-reset-btn" id="btnResizeUndo" onclick="resizeUndo()" title="Undo"><svg class="icon-svg"><use href="#icon-undo" xlink:href="#icon-undo"></use></svg></div>
-          <div class="fp-reset-btn" id="btnResizeRedo" onclick="resizeRedo()" title="Redo"><svg class="icon-svg"><use href="#icon-redo" xlink:href="#icon-redo"></use></svg></div>
-       </div>
+  <div id="boundsEditorPopup" class="floating-panel" style="display:none;">
+    <div class="fp-header" id="fpHeader">
+      <h4 class="fp-title">Artboard & Bounds</h4>
+      <div class="fp-close" onclick="closeBoundsEditor(false)">×</div>
     </div>
     <div class="fp-body">
-       
-       <div class="fp-section">
-          <div class="fp-section-header">
-             <div class="fp-section-title">Artboard (ViewBox)</div>
-             <div class="fp-reset-btn inline" onclick="resetDimensions('ab')" title="Reset Artboard Dimensions"><svg class="icon-svg"><use href="#icon-reset" xlink:href="#icon-reset"></use></svg></div>
+      
+      <div class="fp-section">
+        <div class="fp-section-title">Artboard</div>
+        <div class="fp-row">
+          <div class="fp-input-group">
+            <div class="scrub-label" id="lblAbW" title="Drag to adjust">W</div>
+            <input type="number" id="inpAbW" class="fp-inp">
           </div>
-          <div class="fp-row">
-             <div class="fp-input-group"><span class="fp-scrub" id="scrubAbW">W</span><input type="number" id="inpAbW" class="fp-input"></div>
-             <div class="fp-lock" id="btnLockAb" onclick="toggleLock('ab')" title="Lock Aspect Ratio"><svg class="icon-svg"><use href="#icon-lock" xlink:href="#icon-lock"></use></svg></div>
-             <div class="fp-input-group"><span class="fp-scrub" id="scrubAbH">H</span><input type="number" id="inpAbH" class="fp-input"></div>
+          <div class="fp-toggle-btn active" id="btnAbLock" onclick="toggleAbLock()" title="Lock Proportions">
+            <svg class="icon-svg"><use href="#icon-lock"></use></svg>
           </div>
-       </div>
+          <div class="fp-input-group">
+            <div class="scrub-label" id="lblAbH" title="Drag to adjust">H</div>
+            <input type="number" id="inpAbH" class="fp-inp">
+          </div>
+        </div>
+      </div>
 
-       <div class="fp-divider-row">
-          <div class="fp-divider-line"></div>
-          <div class="fp-link-btn-standalone" id="btnLinkAbInk" onclick="toggleLock('link')" title="Link Artboard and Ink Scaling">
-             <svg class="icon-svg"><use href="#icon-linked-layers" xlink:href="#icon-linked-layers"></use></svg>
+      <div class="fp-link-row">
+        <div class="fp-divider"></div>
+        <div class="fp-toggle-btn link-ab-ib" id="btnLinkedLock" onclick="toggleLinkedLock()" title="Link Artboard to Ink Bounds">
+          <svg class="icon-svg"><use href="#icon-unlinked-layers"></use></svg>
+        </div>
+        <div class="fp-divider"></div>
+      </div>
+
+      <div class="fp-section">
+        <div class="fp-section-title">Ink Bounds</div>
+        <div class="fp-row">
+          <div class="fp-input-group">
+            <div class="scrub-label" id="lblIbW" title="Drag to adjust">W</div>
+            <input type="number" id="inpIbW" class="fp-inp">
           </div>
-          <div class="fp-divider-line"></div>
-       </div>
-       
-       <div class="fp-section">
-          <div class="fp-section-header">
-             <div class="fp-section-title">Ink Bounds</div>
-             <div class="fp-reset-btn inline" onclick="resetDimensions('ink')" title="Reset Ink Dimensions"><svg class="icon-svg"><use href="#icon-reset" xlink:href="#icon-reset"></use></svg></div>
+          <div class="fp-toggle-btn active" id="btnIbLock" onclick="toggleIbLock()" title="Lock Proportions">
+            <svg class="icon-svg"><use href="#icon-lock"></use></svg>
           </div>
-          <div class="fp-row">
-             <div class="fp-input-group"><span class="fp-scrub" id="scrubInkW">W</span><input type="number" id="inpInkW" class="fp-input"></div>
-             <div class="fp-lock" id="btnLockInk" onclick="toggleLock('ink')" title="Lock Aspect Ratio"><svg class="icon-svg"><use href="#icon-lock" xlink:href="#icon-lock"></use></svg></div>
-             <div class="fp-input-group"><span class="fp-scrub" id="scrubInkH">H</span><input type="number" id="inpInkH" class="fp-input"></div>
+          <div class="fp-input-group">
+            <div class="scrub-label" id="lblIbH" title="Drag to adjust">H</div>
+            <input type="number" id="inpIbH" class="fp-inp">
           </div>
-       </div>
-       
-       <div class="fp-section" style="margin-top: 6px;">
-          <div class="fp-section-title">Alignment & Fit</div>
-          <div class="fp-row">
-             <button class="icon-btn" onclick="alignCenter('h')" title="Align Horizontal Center"><svg class="icon-svg"><use href="#icon-align-horizontal-center" xlink:href="#icon-align-horizontal-center"></use></svg></button>
-             <button class="icon-btn" onclick="alignCenter('v')" title="Align Vertical Center"><svg class="icon-svg"><use href="#icon-align-vertical-center" xlink:href="#icon-align-vertical-center"></use></svg></button>
-             <button class="opt-btn" onclick="fitToBounds()" title="Fit Artboard to Ink Bounds" style="margin-left: auto;">Fit to Bounds</button>
+        </div>
+        
+        <div class="fp-actions">
+          <div class="fp-action-btn" onclick="centerBounds('H')" title="Align Horizontal Center">
+            <svg class="icon-svg"><use href="#icon-align-horizontal-center"></use></svg>
           </div>
-       </div>
+          <div class="fp-action-btn" onclick="centerBounds('V')" title="Align Vertical Center">
+            <svg class="icon-svg"><use href="#icon-align-vertical-center"></use></svg>
+          </div>
+          <div class="fp-action-btn fit-btn" onclick="fitToBounds()" title="Strip empty Artboard space">
+            Fit to Bounds
+          </div>
+        </div>
+      </div>
 
     </div>
     <div class="fp-footer">
-       <button class="standard" onclick="cancelResize()">Cancel</button>
-       <button class="primary" onclick="confirmResize()">OK</button>
+      <button class="standard" onclick="closeBoundsEditor(false)">Cancel</button>
+      <button class="primary" onclick="closeBoundsEditor(true)">OK</button>
     </div>
   </div>
 
@@ -80,30 +89,30 @@
           <button id="btnMono" class="opt-btn active" onclick="setColorMode('mono')">Use CSS</button>
           <button id="btnLocal" class="opt-btn" onclick="setColorMode('local')">Preserve Original</button>
           <div class="options-divider"></div>
-          <button class="icon-btn" onclick="location.reload()" title="Refresh Webpage" style="border:none; background:transparent;">
-            <svg class="icon-svg"><use href="#icon-refresh" xlink:href="#icon-refresh"></use></svg>
+          <button class="icon-btn" onclick="location.reload()" title="Refresh Webpage">
+            <svg class="icon-svg"><use href="#icon-refresh"></use></svg>
           </button>
         </div>
       </div>
 
       <div class="preview-container">
         <div class="side-panel panel-artboard">
-          <h4 class="panel-title">
-            Artboard
-            <div class="layer-toggle" onclick="openResizePanel()" title="Edit Dimensions">
-              <svg class="icon-svg"><use href="#icon-edit" xlink:href="#icon-edit"></use></svg>
+          <div class="panel-header-flex">
+            <h4 class="panel-title" style="border:none; margin:0; padding:0;">Artboard</h4>
+            <div class="layer-toggle" onclick="openBoundsEditor()" title="Edit Artboard & Bounds">
+              <svg class="icon-svg"><use href="#icon-edit"></use></svg>
             </div>
-          </h4>
+          </div>
           <div class="detail-item"><span>Width:</span><strong id="detVbW">-</strong></div>
           <div class="detail-item"><span>Height:</span><strong id="detVbH">-</strong></div>
-          <h4 class="panel-title" style="margin-top: 8px; border:none; padding-bottom:0;">Ink Bounds</h4>
+          <h4 class="panel-title" style="margin-top: 8px; border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-bottom: 4px;">Ink Bounds</h4>
           <div class="detail-item"><span>Width:</span><strong id="detObjW">-</strong></div>
           <div class="detail-item"><span>Height:</span><strong id="detObjH">-</strong></div>
         </div>
 
         <div class="preview-box" id="previewArea">
           <div id="btnZoomToggle" class="zoom-toggle" onclick="toggleZoom()" title="Toggle Zoom Mode">
-            <svg class="icon-svg"><use href="#icon-zoom-size" xlink:href="#icon-zoom-size"></use></svg>
+            <svg class="icon-svg"><use href="#icon-zoom-size"></use></svg>
           </div>
         </div>
         
@@ -113,11 +122,11 @@
             <div style="display: flex; align-items: center; gap: 8px;">
               <h4 class="panel-title" style="border:none; margin:0; padding:0;">Layers</h4>
               <div id="btnLinkLayers" class="layer-toggle" style="display: none;" onclick="toggleLinkLayers()" title="Link All Layers">
-                <svg class="icon-svg"><use href="#icon-unlinked-layers" xlink:href="#icon-unlinked-layers"></use></svg>
+                <svg class="icon-svg"><use href="#icon-unlinked-layers"></use></svg>
               </div>
             </div>
             <div class="layer-toggle" onclick="resetAllLayers()" title="Reset All Layers">
-              <svg class="icon-svg"><use href="#icon-reset" xlink:href="#icon-reset"></use></svg>
+              <svg class="icon-svg"><use href="#icon-reset"></use></svg>
             </div>
           </div>
           
@@ -139,14 +148,14 @@
         <h3 class="panel-header">Import</h3>
         <div class="controls">
           <label class="opt-btn">
-            <svg class="icon-svg"><use href="#icon-folder" xlink:href="#icon-folder"></use></svg> Select .svg File
+            <svg class="icon-svg"><use href="#icon-folder"></use></svg> Select .svg File
             <input type="file" id="fileInput" accept=".svg">
           </label>
           <button class="opt-btn" onclick="focusAndSelectSVG(this)">
-            <svg class="icon-svg"><use href="#icon-paste" xlink:href="#icon-paste"></use></svg> Paste Code
+            <svg class="icon-svg"><use href="#icon-paste"></use></svg> Paste Code
           </button>
           <button class="opt-btn" style="margin-left: auto;" onclick="clearSVG(this)">
-            <svg class="icon-svg"><use href="#icon-clear" xlink:href="#icon-clear"></use></svg> Clear
+            <svg class="icon-svg"><use href="#icon-clear"></use></svg> Clear
           </button>
         </div>
         <div class="textarea-wrap" id="importWrap">
@@ -161,10 +170,10 @@
         <h3 class="panel-header">Export</h3>
         <div class="controls">
           <button class="opt-btn" onclick="copyOutput(this)" style="justify-content: flex-start; width: 172px;">
-            <svg class="icon-svg"><use href="#icon-copy" xlink:href="#icon-copy"></use></svg> <span style="width: 100%; text-align: left;">Copy to Clipboard</span>
+            <svg class="icon-svg"><use href="#icon-copy"></use></svg> <span style="width: 100%; text-align: left;">Copy to Clipboard</span>
           </button>
           <button class="opt-btn" onclick="downloadSVG()">
-            <svg class="icon-svg"><use href="#icon-share" xlink:href="#icon-share"></use></svg> Save .svg
+            <svg class="icon-svg"><use href="#icon-share"></use></svg> Save .svg
           </button>
         </div>
         <div class="textarea-wrap" id="exportWrap">
