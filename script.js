@@ -267,43 +267,102 @@ document.addEventListener('keydown', (e) => {
 });
 
 previewArea.addEventListener('pointerdown', (e) => {
-    if (!isEyedropperMode) return;
-    e.preventDefault();
-    e.stopPropagation();
+    // If neither eyedropper nor color picker is active, do nothing
+    if (!isEyedropperMode && !cpActiveCallback) return;
     
     const target = e.target;
     const tagName = target.tagName.toLowerCase();
-    
-    if (['path', 'circle', 'rect', 'polygon', 'polyline', 'ellipse', 'line'].includes(tagName)) {
-        let color = target.getAttribute('fill');
-        if (!color || color === 'none') color = target.getAttribute('stroke');
+    const isValidShape = ['path', 'circle', 'rect', 'polygon', 'polyline', 'ellipse', 'line'].includes(tagName);
+
+    if (isEyedropperMode) {
+        e.preventDefault();
+        e.stopPropagation();
         
-        // Resolve currentColor fallback specifically for Mono Mode rendering
-        if (color === 'currentColor') {
-            const shapes = Array.from(previewArea.querySelectorAll('path, circle, rect, polygon, polyline, ellipse, line'));
-            const index = shapes.indexOf(target);
-            if (index !== -1 && globalOptimizedSvg) {
-                const origNodes = globalOptimizedSvg.querySelectorAll('path, circle, rect, polygon, polyline, ellipse, line');
-                if (origNodes[index]) {
-                    color = origNodes[index].getAttribute('fill');
-                    if (!color || color === 'none') color = origNodes[index].getAttribute('stroke');
+        if (isValidShape) {
+            let color = target.getAttribute('fill');
+            if (!color || color === 'none') color = target.getAttribute('stroke');
+            
+            // Resolve currentColor fallback specifically for Mono Mode rendering
+            if (color === 'currentColor') {
+                const shapes = Array.from(previewArea.querySelectorAll('path, circle, rect, polygon, polyline, ellipse, line'));
+                const index = shapes.indexOf(target);
+                if (index !== -1 && globalOptimizedSvg) {
+                    const origNodes = globalOptimizedSvg.querySelectorAll('path, circle, rect, polygon, polyline, ellipse, line');
+                    if (origNodes[index]) {
+                        color = origNodes[index].getAttribute('fill');
+                        if (!color || color === 'none') color = origNodes[index].getAttribute('stroke');
+                    }
+                }
+            }
+            
+            if (color && color !== 'none') {
+                const hexColor = colorToHex(color);
+                cpIframe.contentWindow.postMessage({ action: 'eyedropperPicked', hex: hexColor }, '*');
+            } else {
+                cpIframe.contentWindow.postMessage({ action: 'eyedropperToggle', state: false }, '*');
+            }
+        } else {
+            // Abort dropper if clicked on empty canvas area
+            cpIframe.contentWindow.postMessage({ action: 'eyedropperToggle', state: false }, '*');
+        }
+        
+        isEyedropperMode = false;
+        document.body.classList.remove('is-eyedropper-active');
+        return;
+    }
+
+    // Direct color picker switching when open
+    if (cpActiveCallback && isValidShape) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const shapes = Array.from(previewArea.querySelectorAll('path, circle, rect, polygon, polyline, ellipse, line'));
+        const index = shapes.indexOf(target);
+        
+        if (index !== -1) {
+            const layerItems = layersList.querySelectorAll('.layer-item');
+            const targetItem = isLinkedMode ? layerItems[0] : layerItems[index];
+            
+            if (targetItem) {
+                let editStroke = false;
+                let color = target.getAttribute('fill');
+                
+                // Check original SVG if currently in mono mode to determine true active attributes
+                if (color === 'currentColor' && globalOptimizedSvg) {
+                    const origNodes = globalOptimizedSvg.querySelectorAll('path, circle, rect, polygon, polyline, ellipse, line');
+                    if (origNodes[index]) {
+                        color = origNodes[index].getAttribute('fill');
+                        if (!color || color === 'none') {
+                            const origStroke = origNodes[index].getAttribute('stroke');
+                            if (origStroke && origStroke !== 'none') editStroke = true;
+                        }
+                    }
+                } else if (!color || color === 'none') {
+                    color = target.getAttribute('stroke');
+                    if (color && color !== 'none') editStroke = true;
+                }
+                
+                const attrRows = targetItem.querySelectorAll('.layer-attr');
+                // Fill is index 0, Stroke is index 1
+                const targetRow = editStroke ? attrRows[1] : attrRows[0];
+                
+                if (targetRow) {
+                    const pickerWrap = targetRow.querySelector('.picker-wrap');
+                    if (pickerWrap) {
+                        // Scroll the layers list to show the selected layer
+                        targetItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        // Add a brief highlight effect to the layer item
+                        targetItem.style.transition = 'background-color 0.2s';
+                        targetItem.style.backgroundColor = 'var(--bg-hover)';
+                        setTimeout(() => { targetItem.style.backgroundColor = ''; }, 300);
+                        
+                        // Trigger the picker open logic for that row
+                        pickerWrap.click();
+                    }
                 }
             }
         }
-        
-        if (color && color !== 'none') {
-            const hexColor = colorToHex(color);
-            cpIframe.contentWindow.postMessage({ action: 'eyedropperPicked', hex: hexColor }, '*');
-        } else {
-            cpIframe.contentWindow.postMessage({ action: 'eyedropperToggle', state: false }, '*');
-        }
-    } else {
-        // Abort dropper if clicked on empty canvas area
-        cpIframe.contentWindow.postMessage({ action: 'eyedropperToggle', state: false }, '*');
     }
-    
-    isEyedropperMode = false;
-    document.body.classList.remove('is-eyedropper-active');
 }, { capture: true });
 
 const createEl = (tag, className = '', props = {}, children = []) => {
@@ -1254,3 +1313,4 @@ const initPanelInputs = () => {
 };
 
 document.addEventListener('DOMContentLoaded', initPanelInputs);
+
