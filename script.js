@@ -1,3 +1,4 @@
+/* fileName: script.js */
 const $ = id => document.getElementById(id);
 const cpIframe = $('cpIframe'), fileInput = $('fileInput'), inputStr = $('inputStr'), outputStr = $('outputStr');
 const previewArea = $('previewArea'), layersList = $('layersList'), layersWrap = $('layersWrap');
@@ -5,164 +6,58 @@ const detVbW = $('detVbW'), detVbH = $('detVbH'), detObjW = $('detObjW'), detObj
 
 let cpActiveCallback = null, cpInitialHex = null;
 let globalOptimizedSvg = null, globalOriginalSvg = null, colorMode = 'mono', zoomMode = 'fit';
-let isLinkedMode = false;
+let isLinkedMode = false, isEyedropperMode = false;
+let cpRects = [], cpIsDragging = false, lastMouseX = 0, lastMouseY = 0;
 const ctxHelper = document.createElement('canvas').getContext('2d');
 
-// ==========================================
-// Bounds Editor Engine
-// ==========================================
-let beBackupSvg = null, beBaseBBox = { x: 0, y: 0, width: 100, height: 100 };
-let beAbW = 128, beAbH = 128;
-let beTx = 0, beTy = 0, beSx = 1, beSy = 1;
-let beAbLocked = true, beIbLocked = true, beLinkedLocked = false;
+// Resize Panel State & History
+let resizeBackupSvg = null;
+let isAbLocked = true, isInkLocked = true, isLinked = true;
+let resizeState = { 
+    baseW: 0, baseH: 0, baseX: 0, baseY: 0, 
+    abW: 0, abH: 0, inkW: 0, inkH: 0, inkX: 0, inkY: 0,
+    origAbW: 0, origAbH: 0, origInkW: 0, origInkH: 0, origInkX: 0, origInkY: 0 
+};
+let resizeHistory = [];
+let resizeHistoryIndex = -1;
 
-const popup = $('boundsEditorPopup'), fpHeader = $('fpHeader');
-let isDraggingPopup = false, pStartX, pStartY, pStartLeft, pStartTop;
-
-fpHeader.addEventListener('pointerdown', e => {
-    if (e.target.closest('.fp-close')) return;
-    isDraggingPopup = true; pStartX = e.clientX; pStartY = e.clientY;
-    const rect = popup.getBoundingClientRect();
-    pStartLeft = rect.left; pStartTop = rect.top;
-    fpHeader.setPointerCapture(e.pointerId);
-});
-fpHeader.addEventListener('pointermove', e => {
-    if (!isDraggingPopup) return;
-    popup.style.left = `${pStartLeft + (e.clientX - pStartX)}px`;
-    popup.style.top = `${pStartTop + (e.clientY - pStartY)}px`;
-    popup.style.transform = 'none'; popup.dataset.moved = 'true';
-});
-const stopPopupDrag = e => { if (isDraggingPopup) { isDraggingPopup = false; fpHeader.releasePointerCapture(e.pointerId); } };
-fpHeader.addEventListener('pointerup', stopPopupDrag);
-fpHeader.addEventListener('pointercancel', stopPopupDrag);
-
-function updateTransformAndPreview() {
-    if (!globalOptimizedSvg) return;
-    const wrapper = globalOptimizedSvg.querySelector('#forge-ink-wrapper');
-    if (wrapper) wrapper.setAttribute('transform', `translate(${beTx}, ${beTy}) scale(${beSx}, ${beSy})`);
-    
-    globalOptimizedSvg.setAttribute('viewBox', `0 0 ${beAbW} ${beAbH}`);
-    if (globalOptimizedSvg.hasAttribute('width')) globalOptimizedSvg.setAttribute('width', beAbW);
-    if (globalOptimizedSvg.hasAttribute('height')) globalOptimizedSvg.setAttribute('height', beAbH);
-    
-    $('inpAbW').value = Number(beAbW.toFixed(2));
-    $('inpAbH').value = Number(beAbH.toFixed(2));
-    $('inpIbW').value = Number((beBaseBBox.width * beSx).toFixed(2));
-    $('inpIbH').value = Number((beBaseBBox.height * beSy).toFixed(2));
-    
-    renderOutput(true);
-}
-
-function attachScrub(labelId, inputId, onChange) {
-    const lbl = $(labelId), inp = $(inputId);
-    let startVal = 0, startX = 0, isDragging = false;
-    lbl.addEventListener('pointerdown', e => {
-        isDragging = true; startX = e.clientX; startVal = parseFloat(inp.value) || 0;
-        lbl.setPointerCapture(e.pointerId); document.body.classList.add('is-dragging');
-    });
-    lbl.addEventListener('pointermove', e => {
-        if (!isDragging) return;
-        let delta = e.clientX - startX; if (e.shiftKey) delta *= 10;
-        onChange(Math.max(0.01, startVal + delta));
-    });
-    const stop = e => { if (isDragging) { isDragging = false; lbl.releasePointerCapture(e.pointerId); document.body.classList.remove('is-dragging'); } };
-    lbl.addEventListener('pointerup', stop); lbl.addEventListener('pointercancel', stop);
-    inp.addEventListener('change', e => onChange(Math.max(0.01, parseFloat(e.target.value) || 1)));
-}
-
-attachScrub('lblAbW', 'inpAbW', val => {
-    let oldW = beAbW; beAbW = val;
-    if (beAbLocked) beAbH = beAbW * (beAbH / oldW || 1);
-    if (beLinkedLocked) { let f = beAbW / oldW; beSx *= f; beSy *= f; beTx *= f; beTy *= f; }
-    updateTransformAndPreview();
-});
-attachScrub('lblAbH', 'inpAbH', val => {
-    let oldH = beAbH; beAbH = val;
-    if (beAbLocked) beAbW = beAbH * (beAbW / oldH || 1);
-    if (beLinkedLocked) { let f = beAbH / oldH; beSx *= f; beSy *= f; beTx *= f; beTy *= f; }
-    updateTransformAndPreview();
-});
-attachScrub('lblIbW', 'inpIbW', val => {
-    let oldIbW = beBaseBBox.width * beSx, f = val / (oldIbW || 1);
-    beSx *= f; if (beIbLocked) beSy *= f;
-    if (beLinkedLocked) { beAbW *= f; beAbH *= f; beTx *= f; beTy *= f; }
-    updateTransformAndPreview();
-});
-attachScrub('lblIbH', 'inpIbH', val => {
-    let oldIbH = beBaseBBox.height * beSy, f = val / (oldIbH || 1);
-    beSy *= f; if (beIbLocked) beSx *= f;
-    if (beLinkedLocked) { beAbW *= f; beAbH *= f; beTx *= f; beTy *= f; }
-    updateTransformAndPreview();
-});
-
-window.toggleAbLock = () => { beAbLocked = !beAbLocked; $('btnAbLock').innerHTML = `<svg class="icon-svg"><use href="#icon-${beAbLocked ? 'lock' : 'unlock'}"></use></svg>`; $('btnAbLock').classList.toggle('active', beAbLocked); };
-window.toggleIbLock = () => { beIbLocked = !beIbLocked; $('btnIbLock').innerHTML = `<svg class="icon-svg"><use href="#icon-${beIbLocked ? 'lock' : 'unlock'}"></use></svg>`; $('btnIbLock').classList.toggle('active', beIbLocked); };
-window.toggleLinkedLock = () => { beLinkedLocked = !beLinkedLocked; $('btnLinkedLock').innerHTML = `<svg class="icon-svg"><use href="#icon-${beLinkedLocked ? 'linked' : 'unlinked'}-layers"></use></svg>`; $('btnLinkedLock').classList.toggle('active', beLinkedLocked); };
-
-window.centerBounds = axis => {
-    let ibW = beBaseBBox.width * beSx, ibH = beBaseBBox.height * beSy;
-    if (axis === 'H') beTx = (beAbW - ibW) / 2 - (beBaseBBox.x * beSx);
-    if (axis === 'V') beTy = (beAbH - ibH) / 2 - (beBaseBBox.y * beSy);
-    updateTransformAndPreview();
+const saveResizeState = () => {
+    const currentState = JSON.stringify(resizeState);
+    if (resizeHistoryIndex >= 0 && resizeHistory[resizeHistoryIndex] === currentState) return;
+    resizeHistory = resizeHistory.slice(0, resizeHistoryIndex + 1);
+    resizeHistory.push(currentState);
+    resizeHistoryIndex++;
+    updateUndoRedoUI();
 };
 
-window.fitToBounds = () => {
-    let ibW = beBaseBBox.width * beSx, ibH = beBaseBBox.height * beSy;
-    beAbW = ibW; beAbH = ibH; beTx = -(beBaseBBox.x * beSx); beTy = -(beBaseBBox.y * beSy);
-    updateTransformAndPreview();
+const updateUndoRedoUI = () => {
+    const btnUndo = $('btnResizeUndo');
+    const btnRedo = $('btnResizeRedo');
+    if (btnUndo) btnUndo.style.opacity = resizeHistoryIndex > 0 ? '1' : '0.3';
+    if (btnUndo) btnUndo.style.pointerEvents = resizeHistoryIndex > 0 ? 'auto' : 'none';
+    if (btnRedo) btnRedo.style.opacity = resizeHistoryIndex < resizeHistory.length - 1 ? '1' : '0.3';
+    if (btnRedo) btnRedo.style.pointerEvents = resizeHistoryIndex < resizeHistory.length - 1 ? 'auto' : 'none';
 };
 
-window.openBoundsEditor = () => {
-    if (!globalOptimizedSvg) return;
-    beBackupSvg = globalOptimizedSvg.cloneNode(true);
-    
-    let wrapper = globalOptimizedSvg.querySelector('#forge-ink-wrapper');
-    if (!wrapper) {
-        wrapper = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        wrapper.id = 'forge-ink-wrapper';
-        Array.from(globalOptimizedSvg.childNodes).forEach(node => {
-            if (node.nodeType === 1 && !['defs', 'style', 'title', 'desc'].includes(node.tagName.toLowerCase())) wrapper.appendChild(node);
-            else if (node.nodeType !== 1) wrapper.appendChild(node);
-        });
-        globalOptimizedSvg.appendChild(wrapper);
+window.resizeUndo = () => {
+    if (resizeHistoryIndex > 0) {
+        resizeHistoryIndex--;
+        resizeState = JSON.parse(resizeHistory[resizeHistoryIndex]);
+        updateResizeInputs(); 
+        applyResizeMath(false);
+        updateUndoRedoUI();
     }
-    
-    renderOutput(true);
-    const svgInDom = previewArea.querySelector('svg:not(.icon-svg)'), wrapperInDom = svgInDom.querySelector('#forge-ink-wrapper');
-    const currentTransform = wrapperInDom.getAttribute('transform');
-    
-    wrapperInDom.removeAttribute('transform');
-    try { beBaseBBox = wrapperInDom.getBBox(); } catch(e) { beBaseBBox = { x: 0, y: 0, width: 100, height: 100 }; }
-    if (beBaseBBox.width === 0) beBaseBBox.width = 1; if (beBaseBBox.height === 0) beBaseBBox.height = 1;
-    wrapperInDom.setAttribute('transform', currentTransform || `translate(0, 0) scale(1, 1)`);
-    
-    let tx = 0, ty = 0, sx = 1, sy = 1;
-    if (currentTransform) {
-        const trMatch = currentTransform.match(/translate\(([^,]+),\s*([^)]+)\)/), scMatch = currentTransform.match(/scale\(([^,]+),\s*([^)]+)\)/);
-        if (trMatch) { tx = parseFloat(trMatch[1]) || 0; ty = parseFloat(trMatch[2]) || 0; }
-        if (scMatch) { sx = parseFloat(scMatch[1]) || 1; sy = parseFloat(scMatch[2]) || 1; }
-    }
-    beTx = tx; beTy = ty; beSx = sx; beSy = sy;
-    
-    const vb = globalOptimizedSvg.getAttribute('viewBox') || globalOptimizedSvg.getAttribute('viewbox');
-    if (vb) { const p = vb.trim().split(/\s+|,/); beAbW = parseFloat(p[2]); beAbH = parseFloat(p[3]); } 
-    else { beAbW = parseFloat(globalOptimizedSvg.getAttribute('width')) || 128; beAbH = parseFloat(globalOptimizedSvg.getAttribute('height')) || 128; }
-    
-    popup.style.display = 'flex';
-    if (!popup.dataset.moved) {
-        popup.style.left = `${(window.innerWidth / 2) - 130}px`; popup.style.top = `${(window.innerHeight / 2) - 200}px`;
-        popup.style.transform = 'none'; popup.dataset.moved = 'true';
-    }
-    updateTransformAndPreview();
 };
 
-window.closeBoundsEditor = (save) => {
-    popup.style.display = 'none';
-    if (!save && beBackupSvg) { globalOptimizedSvg = beBackupSvg; renderOutput(); } 
-    else { renderOutput(); buildLayersPanel(); }
-    beBackupSvg = null;
+window.resizeRedo = () => {
+    if (resizeHistoryIndex < resizeHistory.length - 1) {
+        resizeHistoryIndex++;
+        resizeState = JSON.parse(resizeHistory[resizeHistoryIndex]);
+        updateResizeInputs(); 
+        applyResizeMath(false);
+        updateUndoRedoUI();
+    }
 };
-
 
 // ==========================================
 // Centralized Popup Engine
@@ -304,15 +199,112 @@ window.openCustomPicker = (initialHex, callback) => {
     cpIframe.contentWindow.postMessage({ action: 'open', hex: initialHex }, '*');
 };
 
+// ==========================================
+// Dynamic Click-Through Tracking Engine
+// ==========================================
+const checkIframePointer = (x, y) => {
+    if (!cpActiveCallback && !isEyedropperMode && cpRects.length === 0) return;
+    
+    if (cpIsDragging) {
+        cpIframe.style.pointerEvents = 'auto';
+        return;
+    }
+    
+    let isOverModal = false;
+    for (let i = 0; i < cpRects.length; i++) {
+        let r = cpRects[i];
+        if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) {
+            isOverModal = true; break;
+        }
+    }
+    
+    cpIframe.style.pointerEvents = isOverModal ? 'auto' : 'none';
+};
+
+window.addEventListener('pointermove', e => {
+    lastMouseX = e.clientX; lastMouseY = e.clientY;
+    checkIframePointer(lastMouseX, lastMouseY);
+});
+
+// ==========================================
+// Eyedropper Communication Engine
+// ==========================================
 window.addEventListener('message', e => {
     if (e.source !== cpIframe.contentWindow || !e.data?.action) return;
-    const { action, hex, isScrubbing } = e.data;
-    if (action === 'update' && cpActiveCallback) cpActiveCallback(hex, isScrubbing);
-    else if (action === 'confirm' || action === 'cancel') {
+    const { action, hex, isScrubbing, state, rects, isDragging, x, y } = e.data;
+    
+    if (action === 'cpState') {
+        cpRects = rects || [];
+        cpIsDragging = !!isDragging;
+        checkIframePointer(lastMouseX, lastMouseY);
+    } else if (action === 'mouseMove') {
+        lastMouseX = x; lastMouseY = y;
+        checkIframePointer(lastMouseX, lastMouseY);
+    } else if (action === 'update' && cpActiveCallback) {
+        cpActiveCallback(hex, isScrubbing);
+    } else if (action === 'confirm' || action === 'cancel') {
         if (cpActiveCallback) cpActiveCallback(action === 'confirm' ? hex : cpInitialHex, false);
         cpIframe.style.pointerEvents = 'none'; cpActiveCallback = cpInitialHex = null;
+        isEyedropperMode = false;
+        document.body.classList.remove('is-eyedropper-active');
+        cpRects = [];
+    } else if (action === 'eyedropperToggle') {
+        isEyedropperMode = state;
+        if (state) {
+            document.body.classList.add('is-eyedropper-active');
+        } else {
+            document.body.classList.remove('is-eyedropper-active');
+        }
     }
 });
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isEyedropperMode) {
+        isEyedropperMode = false;
+        document.body.classList.remove('is-eyedropper-active');
+        cpIframe.contentWindow.postMessage({ action: 'eyedropperToggle', state: false }, '*');
+    }
+});
+
+previewArea.addEventListener('pointerdown', (e) => {
+    if (!isEyedropperMode) return;
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const target = e.target;
+    const tagName = target.tagName.toLowerCase();
+    
+    if (['path', 'circle', 'rect', 'polygon', 'polyline', 'ellipse', 'line'].includes(tagName)) {
+        let color = target.getAttribute('fill');
+        if (!color || color === 'none') color = target.getAttribute('stroke');
+        
+        // Resolve currentColor fallback specifically for Mono Mode rendering
+        if (color === 'currentColor') {
+            const shapes = Array.from(previewArea.querySelectorAll('path, circle, rect, polygon, polyline, ellipse, line'));
+            const index = shapes.indexOf(target);
+            if (index !== -1 && globalOptimizedSvg) {
+                const origNodes = globalOptimizedSvg.querySelectorAll('path, circle, rect, polygon, polyline, ellipse, line');
+                if (origNodes[index]) {
+                    color = origNodes[index].getAttribute('fill');
+                    if (!color || color === 'none') color = origNodes[index].getAttribute('stroke');
+                }
+            }
+        }
+        
+        if (color && color !== 'none') {
+            const hexColor = colorToHex(color);
+            cpIframe.contentWindow.postMessage({ action: 'eyedropperPicked', hex: hexColor }, '*');
+        } else {
+            cpIframe.contentWindow.postMessage({ action: 'eyedropperToggle', state: false }, '*');
+        }
+    } else {
+        // Abort dropper if clicked on empty canvas area
+        cpIframe.contentWindow.postMessage({ action: 'eyedropperToggle', state: false }, '*');
+    }
+    
+    isEyedropperMode = false;
+    document.body.classList.remove('is-eyedropper-active');
+}, { capture: true });
 
 const createEl = (tag, className = '', props = {}, children = []) => {
     const el = document.createElement(tag);
@@ -327,21 +319,26 @@ const colorToHex = col => {
     ctxHelper.fillStyle = '#000000'; ctxHelper.fillStyle = col; return ctxHelper.fillStyle;
 };
 
-const applyZoomState = () => {
+const applyZoomState = (isScrubbing = false) => {
     const svg = previewArea.querySelector('svg:not(.icon-svg)'), btn = $('btnZoomToggle');
     if (!svg) return;
     const nw = parseFloat(svg.dataset.nativeW) || 128, nh = parseFloat(svg.dataset.nativeH) || 128;
-    Object.assign(svg.style, { transition: 'width 0.2s, height 0.2s', maxWidth: 'none', maxHeight: 'none' });
+    
+    Object.assign(svg.style, { 
+        transition: isScrubbing ? 'none' : 'width 0.25s cubic-bezier(0.4, 0, 0.2, 1), height 0.25s cubic-bezier(0.4, 0, 0.2, 1)', 
+        maxWidth: 'none', 
+        maxHeight: 'none' 
+    });
     
     if (zoomMode === 'fit') {
         const cw = previewArea.clientWidth - 40, ch = previewArea.clientHeight - 40;
         if (cw <= 0 || ch <= 0) return;
         const scale = Math.min(cw / nw, ch / nh);
         svg.style.width = `${nw * scale}px`; svg.style.height = `${nh * scale}px`;
-        if (btn) btn.innerHTML = '<svg class="icon-svg"><use href="#icon-zoom-size"></use></svg>';
+        if (btn) btn.innerHTML = '<svg class="icon-svg"><use href="#icon-zoom-size" xlink:href="#icon-zoom-size"></use></svg>';
     } else {
         svg.style.width = `${nw}px`; svg.style.height = `${nh}px`;
-        if (btn) btn.innerHTML = '<svg class="icon-svg"><use href="#icon-zoom-fit"></use></svg>';
+        if (btn) btn.innerHTML = '<svg class="icon-svg"><use href="#icon-zoom-fit" xlink:href="#icon-zoom-fit"></use></svg>';
     }
 };
 
@@ -374,10 +371,16 @@ const resetUI = () => {
     if(btnLink) btnLink.style.display = 'none';
     if(opPopup) opPopup.style.display = 'none';
     if(strokePopup) strokePopup.style.display = 'none';
+    if($('resizePanel')) $('resizePanel').style.display = 'none';
     window.updateAllScrollbars();
 };
 
-inputStr.addEventListener('input', () => { window.processSVG(); });
+let processTimeout;
+inputStr.addEventListener('input', () => { 
+    clearTimeout(processTimeout);
+    processTimeout = setTimeout(() => { window.processSVG(); }, 300);
+});
+
 fileInput.addEventListener('change', e => {
     const file = e.target.files[0]; if (!file) return;
     const reader = new FileReader();
@@ -398,6 +401,25 @@ window.clearSVG = (btn) => {
     setTimeout(() => { btn.classList.remove('btn-yellow'); inputStr.classList.remove('ring-yellow'); }, 1000);
 };
 
+const ensureInkWrapper = (svgNode) => {
+    let wrapper = svgNode.querySelector(':scope > g#ink-wrapper');
+    if (!wrapper) {
+        wrapper = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        wrapper.id = 'ink-wrapper';
+        const children = Array.from(svgNode.childNodes);
+        children.forEach(child => {
+            if (child.nodeType === 1) {
+                const tag = child.tagName.toLowerCase();
+                if (!['defs', 'style', 'title', 'desc'].includes(tag)) wrapper.appendChild(child);
+            } else if (child.nodeType === 3 && child.textContent.trim() !== '') {
+                wrapper.appendChild(child);
+            }
+        });
+        svgNode.appendChild(wrapper);
+    }
+    return wrapper;
+};
+
 window.processSVG = () => {
     const rawCode = inputStr.value.trim();
     if (!rawCode) return resetUI();
@@ -406,8 +428,15 @@ window.processSVG = () => {
 
     const classStyles = {};
     oldSvg.querySelectorAll('style').forEach(tag => {
-        let match; const regex = /\.([a-zA-Z0-9_-]+)\s*\{([^}]+)\}/g;
-        while ((match = regex.exec(tag.textContent)) !== null) classStyles[match[1].trim()] = match[2].trim();
+        let match; const regex = /([^\{]+)\{([^}]+)\}/g;
+        while ((match = regex.exec(tag.textContent)) !== null) {
+            const selectors = match[1].split(',');
+            const rules = match[2].trim();
+            selectors.forEach(sel => {
+                const cleanSel = sel.trim().replace('.', '');
+                if (cleanSel) classStyles[cleanSel] = rules;
+            });
+        }
     });
 
     const optimizeNode = node => {
@@ -418,7 +447,7 @@ window.processSVG = () => {
         const newNode = document.createElementNS("http://www.w3.org/2000/svg", tagName);
         if (tagName === 'svg') newNode.setAttribute("xmlns", "http://www.w3.org/2000/svg");
 
-        const structAttrs = ['viewbox', 'd', 'cx', 'cy', 'r', 'rx', 'ry', 'x', 'y', 'x1', 'y1', 'x2', 'y2', 'width', 'height', 'points', 'transform', 'id', 'offset', 'gradientunits', 'gradienttransform', 'href', 'xlink:href'];
+        const structAttrs = ['viewbox', 'd', 'cx', 'cy', 'r', 'rx', 'ry', 'x', 'y', 'x1', 'y1', 'x2', 'y2', 'width', 'height', 'points', 'transform', 'id', 'offset', 'gradientunits', 'gradienttransform', 'href', 'xlink:href', 'xmlns:xlink'];
         const presAttrs = ['fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'fill-rule', 'clip-rule', 'opacity', 'stop-color', 'stop-opacity', 'fill-opacity', 'stroke-opacity'];
 
         let styles = node.hasAttribute('style') ? node.getAttribute('style') + ";" : "";
@@ -446,10 +475,18 @@ window.processSVG = () => {
 
     globalOptimizedSvg = optimizeNode(oldSvg);
     
-    if (!globalOptimizedSvg.getAttribute("viewBox") && !globalOptimizedSvg.getAttribute("viewbox") && oldSvg.getAttribute("width")) {
-        globalOptimizedSvg.setAttribute("viewBox", `0 0 ${parseFloat(oldSvg.getAttribute("width"))} ${parseFloat(oldSvg.getAttribute("height"))}`);
+    let vb = globalOptimizedSvg.getAttribute("viewBox");
+    if (!vb && oldSvg.getAttribute("width")) {
+        vb = `0 0 ${parseFloat(oldSvg.getAttribute("width"))} ${parseFloat(oldSvg.getAttribute("height"))}`;
+        globalOptimizedSvg.setAttribute("viewBox", vb);
     }
-        
+    if (vb) {
+        const p = vb.trim().split(/[\s,]+/);
+        globalOptimizedSvg.setAttribute("width", Number(parseFloat(p[2]).toFixed(2)));
+        globalOptimizedSvg.setAttribute("height", Number(parseFloat(p[3]).toFixed(2)));
+    }
+    
+    ensureInkWrapper(globalOptimizedSvg);
     globalOriginalSvg = globalOptimizedSvg.cloneNode(true);
     buildLayersPanel(); renderOutput();
 };
@@ -479,7 +516,7 @@ window.toggleLinkLayers = () => {
                 if (fill !== null) s.setAttribute('fill', fill); else s.removeAttribute('fill');
                 if (stroke !== null) s.setAttribute('stroke', stroke); else s.removeAttribute('stroke');
                 if (strokeWidth !== null) s.setAttribute('stroke-width', strokeWidth); else s.removeAttribute('stroke-width');
-                if (hiddenFill) s.setAttribute('data-hidden-fill', 'true'); else s.removeAttribute('data-hidden-stroke');
+                if (hiddenFill) s.setAttribute('data-hidden-fill', 'true'); else s.removeAttribute('data-hidden-fill'); 
                 if (hiddenStroke) s.setAttribute('data-hidden-stroke', 'true'); else s.removeAttribute('data-hidden-stroke');
                 if (fillOp !== null) s.setAttribute('fill-opacity', fillOp); else s.removeAttribute('fill-opacity');
                 if (strokeOp !== null) s.setAttribute('stroke-opacity', strokeOp); else s.removeAttribute('stroke-opacity');
@@ -487,7 +524,7 @@ window.toggleLinkLayers = () => {
             renderOutput();
         }
 
-        btnLink.innerHTML = '<svg class="icon-svg"><use href="#icon-linked-layers"></use></svg>';
+        btnLink.innerHTML = '<svg class="icon-svg"><use href="#icon-linked-layers" xlink:href="#icon-linked-layers"></use></svg>';
 
         const items = Array.from(layersList.querySelectorAll('.layer-item'));
         if (items.length > 0) {
@@ -514,7 +551,7 @@ window.toggleLinkLayers = () => {
         }, 400);
     } else {
         layersList.style.opacity = '0';
-        btnLink.innerHTML = '<svg class="icon-svg"><use href="#icon-unlinked-layers"></use></svg>';
+        btnLink.innerHTML = '<svg class="icon-svg"><use href="#icon-unlinked-layers" xlink:href="#icon-unlinked-layers"></use></svg>';
         isLinkedMode = false;
         buildLayersPanel();
         
@@ -568,7 +605,7 @@ const buildLayersPanel = () => {
     
     if (shapes.length > 1) {
         btnLink.style.display = 'flex';
-        btnLink.innerHTML = `<svg class="icon-svg"><use href="#icon-${isLinkedMode ? 'linked' : 'unlinked'}-layers"></use></svg>`;
+        btnLink.innerHTML = `<svg class="icon-svg"><use href="#icon-${isLinkedMode ? 'linked' : 'unlinked'}-layers" xlink:href="#icon-${isLinkedMode ? 'linked' : 'unlinked'}-layers"></use></svg>`;
     } else {
         if (btnLink) btnLink.style.display = 'none';
         isLinkedMode = false;
@@ -588,7 +625,9 @@ const buildLayersPanel = () => {
         
         if (isHidden) nodes.forEach(n => n.setAttribute(`data-hidden-${attrKey}`, 'true'));
         
-        let activeHex = colorToHex(origVal).toUpperCase(), updateRaf = null;
+        const isGradient = origVal && origVal.includes('url');
+        let activeHex = isGradient ? origVal : colorToHex(origVal).toUpperCase();
+        let updateRaf = null;
 
         const row = createEl('div', `layer-attr ${isHidden ? 'hidden-row' : ''}`);
 
@@ -613,7 +652,7 @@ const buildLayersPanel = () => {
             nodes.forEach(n => n.removeAttribute(`data-hidden-${attrKey}`)); 
             tglBtn.classList.remove('hidden-state'); 
             row.classList.remove('hidden-row');
-            tglBtn.innerHTML = '<svg class="icon-svg"><use href="#icon-eye"></use></svg>';
+            tglBtn.innerHTML = '<svg class="icon-svg"><use href="#icon-eye" xlink:href="#icon-eye"></use></svg>';
             
             if (scrub) { 
                 if (updateRaf) cancelAnimationFrame(updateRaf); 
@@ -625,8 +664,11 @@ const buildLayersPanel = () => {
 
         const label = createEl('span', 'layer-attr-label', { textContent: attrName });
         
-        const pCenter = createEl('div', 'picker-center', { style: { backgroundColor: activeHex } });
-        const pickerWrap = createEl('div', 'picker-wrap', { onclick: () => window.openCustomPicker(activeHex, (newCol, scrub) => updateColor(newCol, scrub)) }, [
+        const pCenter = createEl('div', 'picker-center', { style: { backgroundColor: isGradient ? 'transparent' : activeHex } });
+        const pickerWrap = createEl('div', 'picker-wrap', { onclick: () => {
+            const startCol = activeHex.includes('url') ? '#000000' : activeHex;
+            window.openCustomPicker(startCol, (newCol, scrub) => updateColor(newCol, scrub));
+        }}, [
             createEl('div', 'picker-ios', {}, [pCenter])
         ]);
 
@@ -637,7 +679,10 @@ const buildLayersPanel = () => {
         const opInp = createEl('input', 'cp-op-input', { 
             type: 'number', value: Math.round(opParsed), min: 0, max: 100, 
             oninput: e => {
-                let v = Math.min(100, Math.max(0, parseInt(e.target.value) || 0));
+                if (e.target.value === '') return;
+                let parsed = parseInt(e.target.value);
+                if (isNaN(parsed)) return;
+                let v = Math.min(100, Math.max(0, parsed));
                 let finalVal = (v / 100).toFixed(2).replace(/\.?0+$/, '');
                 if (finalVal === "") finalVal = "0";
                 nodes.forEach(n => {
@@ -648,8 +693,16 @@ const buildLayersPanel = () => {
                 updateRaf = requestAnimationFrame(() => renderOutput(true));
             }, 
             onblur: e => {
-                let v = Math.min(100, Math.max(0, parseInt(e.target.value) || 0));
-                e.target.value = v; renderOutput();
+                let parsed = parseInt(e.target.value);
+                let v = isNaN(parsed) ? 100 : Math.min(100, Math.max(0, parsed));
+                e.target.value = v; 
+                let finalVal = (v / 100).toFixed(2).replace(/\.?0+$/, '');
+                if (finalVal === "") finalVal = "0";
+                nodes.forEach(n => {
+                    if (v === 100) n.removeAttribute(`${attrKey}-opacity`);
+                    else n.setAttribute(`${attrKey}-opacity`, finalVal);
+                });
+                renderOutput(false);
             }
         });
         
@@ -657,7 +710,7 @@ const buildLayersPanel = () => {
 
         const opTrigger = createEl('div', 'slider-trigger op', {
             title: 'Adjust Opacity',
-            innerHTML: `<svg class="icon-svg" style="width:16px;height:16px;"><use href="#icon-slider-vertical"></use></svg>`,
+            innerHTML: `<svg class="icon-svg" style="width:16px;height:16px;"><use href="#icon-slider-vertical" xlink:href="#icon-slider-vertical"></use></svg>`,
             onclick: e => {
                 e.stopPropagation();
                 document.querySelectorAll('.slider-trigger').forEach(el => el.classList.remove('is-active'));
@@ -665,7 +718,10 @@ const buildLayersPanel = () => {
 
                 const rect = opTrigger.getBoundingClientRect();
                 opPopup.style.display = 'flex';
-                opPopup.style.left = `${rect.left + (rect.width / 2) - 17}px`;
+                let leftPos = rect.left + (rect.width / 2) - 17;
+                if (leftPos + 34 > window.innerWidth) leftPos = window.innerWidth - 44;
+                
+                opPopup.style.left = `${leftPos}px`;
                 opPopup.style.top = `${rect.top - 148}px`; 
 
                 const range = opPopup.querySelector('input');
@@ -675,10 +731,13 @@ const buildLayersPanel = () => {
                     opInp.value = ev.target.value;
                     opInp.dispatchEvent(new Event('input'));
                 };
+                range.onchange = () => {
+                    opInp.dispatchEvent(new Event('blur')); // Finalize export output
+                };
             }
         });
 
-        const tglBtn = createEl('div', `layer-toggle ${isHidden ? 'hidden-state' : ''}`, { innerHTML: `<svg class="icon-svg"><use href="#icon-eye${isHidden ? '-hidden' : ''}"></use></svg>` });
+        const tglBtn = createEl('div', `layer-toggle ${isHidden ? 'hidden-state' : ''}`, { innerHTML: `<svg class="icon-svg"><use href="#icon-eye${isHidden ? '-hidden' : ''}" xlink:href="#icon-eye${isHidden ? '-hidden' : ''}"></use></svg>` });
         tglBtn.onclick = () => {
             if (nodes[0].getAttribute(`data-hidden-${attrKey}`)) {
                 nodes.forEach(n => {
@@ -691,13 +750,13 @@ const buildLayersPanel = () => {
                     if (sizeInp && parseFloat(sizeInp.value) === 0) sizeInp.value = '1';
                 }
                 tglBtn.classList.remove('hidden-state'); row.classList.remove('hidden-row'); 
-                tglBtn.innerHTML = '<svg class="icon-svg"><use href="#icon-eye"></use></svg>';
+                tglBtn.innerHTML = '<svg class="icon-svg"><use href="#icon-eye" xlink:href="#icon-eye"></use></svg>';
             } else {
                 nodes.forEach(n => n.setAttribute(`data-hidden-${attrKey}`, 'true')); 
                 tglBtn.classList.add('hidden-state'); row.classList.add('hidden-row'); 
-                tglBtn.innerHTML = '<svg class="icon-svg"><use href="#icon-eye-hidden"></use></svg>';
+                tglBtn.innerHTML = '<svg class="icon-svg"><use href="#icon-eye-hidden" xlink:href="#icon-eye-hidden"></use></svg>';
             }
-            renderOutput();
+            renderOutput(false);
         };
 
         const leftBlock = createEl('div', 'attr-left');
@@ -709,17 +768,25 @@ const buildLayersPanel = () => {
 
         if (isStroke) {
             const sizeInp = createEl('input', 'cp-size-input', { type: 'number', value: nodes[0].getAttribute('stroke-width') || 1, min: 0, step: 0.5, oninput: e => {
-                let v = Math.max(0, parseFloat(e.target.value) || 0); 
+                if (e.target.value === '') return; 
+                let parsed = parseFloat(e.target.value);
+                if (isNaN(parsed)) return;
+                let v = Math.max(0, parsed); 
                 nodes.forEach(n => n.setAttribute('stroke-width', v));
-                if (v > 0 && nodes[0].getAttribute('data-hidden-stroke')) updateColor(activeHex || '#000000'); 
+                if (v > 0 && nodes[0].getAttribute('data-hidden-stroke')) updateColor(activeHex.includes('url') ? '#000000' : activeHex); 
                 if (updateRaf) cancelAnimationFrame(updateRaf); 
                 updateRaf = requestAnimationFrame(() => renderOutput(true));
+            }, onblur: e => {
+                if (e.target.value === '' || isNaN(parseFloat(e.target.value))) {
+                    e.target.value = 1; nodes.forEach(n => n.setAttribute('stroke-width', 1));
+                }
+                renderOutput(false);
             }});
             const sizeInpGroup = createEl('div', 'cp-input-group', {}, [sizeInp, createEl('span', 'cp-unit', { textContent: 'px' })]);
             
             const strokeTrigger = createEl('div', 'slider-trigger stroke', {
                 title: 'Adjust Stroke Width',
-                innerHTML: `<svg class="icon-svg" style="width:16px;height:16px;"><use href="#icon-slider-horizontal"></use></svg>`,
+                innerHTML: `<svg class="icon-svg" style="width:16px;height:16px;"><use href="#icon-slider-horizontal" xlink:href="#icon-slider-horizontal"></use></svg>`,
                 onclick: e => {
                     e.stopPropagation();
                     document.querySelectorAll('.slider-trigger').forEach(el => el.classList.remove('is-active'));
@@ -727,7 +794,12 @@ const buildLayersPanel = () => {
 
                     const rect = strokeTrigger.getBoundingClientRect();
                     strokePopup.style.display = 'flex';
-                    strokePopup.style.left = `${rect.left + (rect.width / 2) - 70}px`;
+                    
+                    let leftPos = rect.left + (rect.width / 2) - 70;
+                    if (leftPos + 140 > window.innerWidth) leftPos = window.innerWidth - 150;
+                    if (leftPos < 10) leftPos = 10;
+                    
+                    strokePopup.style.left = `${leftPos}px`;
                     strokePopup.style.top = `${rect.top - 44}px`; 
 
                     const range = strokePopup.querySelector('input');
@@ -737,7 +809,12 @@ const buildLayersPanel = () => {
                     range.onpointerdown = () => {
                         dragging = true; dragBase = parseFloat(sizeInp.value) || 0;
                         const handleStop = () => {
-                            if (dragging) { dragging = false; range.value = 0; if (updateRaf) cancelAnimationFrame(updateRaf); updateRaf = requestAnimationFrame(() => renderOutput(true)); }
+                            if (dragging) { 
+                                dragging = false; range.value = 0; 
+                                if (updateRaf) cancelAnimationFrame(updateRaf); 
+                                updateRaf = requestAnimationFrame(() => renderOutput(false)); 
+                                sizeInp.dispatchEvent(new Event('blur')); // Finalize state
+                            }
                             window.removeEventListener('pointerup', handleStop); window.removeEventListener('pointercancel', handleStop);
                         };
                         window.addEventListener('pointerup', handleStop); window.addEventListener('pointercancel', handleStop);
@@ -745,7 +822,7 @@ const buildLayersPanel = () => {
 
                     range.oninput = ev => {
                         if (!dragging) return;
-                        let v = Number(Math.max(0, dragBase + parseFloat(ev.target.value)).toFixed(2));
+                        let v = Number(Math.max(0, dragBase + (parseFloat(ev.target.value) * 10)).toFixed(2));
                         sizeInp.value = v; sizeInp.dispatchEvent(new Event('input'));
                     };
                 }
@@ -786,7 +863,7 @@ const buildLayersPanel = () => {
         layersList.appendChild(createEl('div', 'layer-item', {}, [
             createEl('div', 'layer-title-row', {}, [
                 createEl('div', 'layer-title', { textContent: `Linked Layers (${shapes.length})` }),
-                createEl('div', 'layer-toggle', { title: 'Reset Layer', style: { opacity: '0', pointerEvents: 'none' }, innerHTML: '<svg class="icon-svg"><use href="#icon-reset"></use></svg>' })
+                createEl('div', 'layer-toggle', { title: 'Reset Layer', style: { opacity: '0', pointerEvents: 'none' }, innerHTML: '<svg class="icon-svg"><use href="#icon-reset" xlink:href="#icon-reset"></use></svg>' })
             ]), 
             createAttrRow('Fill', shapes), 
             createAttrRow('Stroke', shapes)
@@ -796,9 +873,9 @@ const buildLayersPanel = () => {
             layersList.appendChild(createEl('div', 'layer-item', {}, [
                 createEl('div', 'layer-title-row', {}, [
                     createEl('div', 'layer-title', { textContent: `${shape.tagName.charAt(0).toUpperCase() + shape.tagName.slice(1)} ${i + 1}` }),
-                    createEl('div', 'layer-toggle', { title: 'Reset Layer', innerHTML: '<svg class="icon-svg"><use href="#icon-reset"></use></svg>', onclick: () => {
+                    createEl('div', 'layer-toggle', { title: 'Reset Layer', innerHTML: '<svg class="icon-svg"><use href="#icon-reset" xlink:href="#icon-reset"></use></svg>', onclick: () => {
                         const orig = globalOriginalSvg.querySelectorAll('path, circle, rect, polygon, polyline, ellipse, line')[i];
-                        if (orig) { shape.replaceWith(orig.cloneNode(true)); buildLayersPanel(); renderOutput(); }
+                        if (orig) { shape.replaceWith(orig.cloneNode(true)); buildLayersPanel(); renderOutput(false); }
                     }})
                 ]), 
                 createAttrRow('Fill', [shape]), 
@@ -810,6 +887,9 @@ const buildLayersPanel = () => {
     requestAnimationFrame(window.updateAllScrollbars); 
 };
 
+// ==========================================
+// High Performance DOM Replacement Engine
+// ==========================================
 const renderOutput = (isScrubbing = false) => {
     if (!globalOptimizedSvg) return;
     const clone = globalOptimizedSvg.cloneNode(true);
@@ -826,34 +906,52 @@ const renderOutput = (isScrubbing = false) => {
         }
     });
 
-    const emps = clone.querySelectorAll('g:not(#forge-ink-wrapper), defs');
+    const emps = clone.querySelectorAll('g, defs');
     for (let i = emps.length - 1; i >= 0; i--) if (!emps[i].children.length) emps[i].remove();
 
-    const code = new XMLSerializer().serializeToString(clone);
-    previewArea.innerHTML = $('btnZoomToggle').outerHTML + code;
-    if (!isScrubbing) outputStr.value = code;
+    const wrapper = clone.querySelector('g#ink-wrapper');
+    if (wrapper) {
+        wrapper.removeAttribute('data-pf-sx');
+        wrapper.removeAttribute('data-pf-sy');
+        wrapper.removeAttribute('data-pf-tx');
+        wrapper.removeAttribute('data-pf-ty');
+    }
 
     const vb = clone.getAttribute("viewBox") || clone.getAttribute("viewbox");
     let nw = 128, nh = 128;
     if (vb) {
-        const p = vb.trim().split(/\s+|,/); nw = parseFloat(p[2]); nh = parseFloat(p[3]);
+        const p = vb.trim().split(/[\s,]+/); nw = parseFloat(p[2]); nh = parseFloat(p[3]);
         detVbW.textContent = `${nw.toFixed(2)}px`; detVbH.textContent = `${nh.toFixed(2)}px`;
     } else {
         detVbW.textContent = `-`; detVbH.textContent = `-`;
     }
 
-    const svg = previewArea.querySelector('svg:not(.icon-svg)');
-    if (svg) {
-        svg.dataset.nativeW = nw; svg.dataset.nativeH = nh;
-        try { 
-            const boundsTarget = svg.querySelector('#forge-ink-wrapper') || svg;
-            const b = boundsTarget.getBBox(); 
-            detObjW.textContent = `${b.width.toFixed(2)}px`; 
-            detObjH.textContent = `${b.height.toFixed(2)}px`; 
-        } 
-        catch { detObjW.textContent = detObjH.textContent = 'Error'; }
-        applyZoomState();
+    clone.dataset.nativeW = nw; clone.dataset.nativeH = nh;
+
+    const oldSvg = previewArea.querySelector('svg:not(.icon-svg)');
+    if (oldSvg) {
+        clone.style.width = oldSvg.style.width || `${nw}px`;
+        clone.style.height = oldSvg.style.height || `${nh}px`;
+        clone.style.transition = 'none'; 
+        oldSvg.replaceWith(clone);
+        void clone.offsetWidth; 
+    } else {
+        clone.style.transition = 'none';
+        previewArea.appendChild(clone);
+        void clone.offsetWidth;
     }
+
+    if (!isScrubbing) {
+        outputStr.value = new XMLSerializer().serializeToString(clone);
+    }
+
+    try { 
+        const b = clone.getBBox();
+        detObjW.textContent = `${b.width.toFixed(2)}px`; 
+        detObjH.textContent = `${b.height.toFixed(2)}px`; 
+    } catch { detObjW.textContent = detObjH.textContent = 'Error'; }
+    
+    applyZoomState(isScrubbing);
 };
 
 window.copyOutput = btn => {
@@ -887,3 +985,272 @@ window.downloadSVG = async () => {
     a.href = `data:application/octet-stream;base64,${btoa(unescape(encodeURIComponent(outputStr.value)))}`;
     a.download = 'icon_optimized.svg'; document.body.appendChild(a); a.click(); a.remove();
 };
+
+// ==========================================
+// Dimension Resizing & Bounding Engine
+// ==========================================
+const updateResizeInputs = () => {
+    const setVal = (el, val) => { if (document.activeElement !== el) el.value = Number(val.toFixed(2)); };
+    setVal($('inpAbW'), resizeState.abW);
+    setVal($('inpAbH'), resizeState.abH);
+    setVal($('inpInkW'), resizeState.inkW);
+    setVal($('inpInkH'), resizeState.inkH);
+
+    $('btnLockAb').innerHTML = `<svg class="icon-svg"><use href="#icon-${isAbLocked ? 'lock' : 'unlock'}" xlink:href="#icon-${isAbLocked ? 'lock' : 'unlock'}"></use></svg>`;
+    $('btnLockAb').className = `fp-lock ${isAbLocked ? '' : 'is-unlocked'}`;
+    $('btnLockInk').innerHTML = `<svg class="icon-svg"><use href="#icon-${isInkLocked ? 'lock' : 'unlock'}" xlink:href="#icon-${isInkLocked ? 'lock' : 'unlock'}"></use></svg>`;
+    $('btnLockInk').className = `fp-lock ${isInkLocked ? '' : 'is-unlocked'}`;
+    $('btnLinkAbInk').innerHTML = `<svg class="icon-svg"><use href="#icon-${isLinked ? 'linked-layers' : 'unlinked-layers'}" xlink:href="#icon-${isLinked ? 'linked-layers' : 'unlinked-layers'}"></use></svg>`;
+    $('btnLinkAbInk').className = `fp-link-btn-standalone ${isLinked ? '' : 'is-unlinked'}`;
+};
+
+const applyResizeMath = (isScrubbing = true) => {
+    let sx = Number((resizeState.baseW === 0 ? 1 : resizeState.inkW / resizeState.baseW).toFixed(4));
+    let sy = Number((resizeState.baseH === 0 ? 1 : resizeState.inkH / resizeState.baseH).toFixed(4));
+    let tx = Number((resizeState.inkX - (resizeState.baseX * sx)).toFixed(4));
+    let ty = Number((resizeState.inkY - (resizeState.baseY * sy)).toFixed(4));
+    
+    let wrapper = globalOptimizedSvg.querySelector('g#ink-wrapper');
+    if (wrapper) {
+        wrapper.setAttribute('data-pf-sx', sx); wrapper.setAttribute('data-pf-sy', sy);
+        wrapper.setAttribute('data-pf-tx', tx); wrapper.setAttribute('data-pf-ty', ty);
+        wrapper.setAttribute('transform', `translate(${tx}, ${ty}) scale(${sx}, ${sy})`);
+    }
+    
+    let abW = Number(resizeState.abW.toFixed(2));
+    let abH = Number(resizeState.abH.toFixed(2));
+    
+    globalOptimizedSvg.setAttribute('viewBox', `0 0 ${abW} ${abH}`);
+    globalOptimizedSvg.setAttribute('width', `${abW}`);
+    globalOptimizedSvg.setAttribute('height', `${abH}`);
+    
+    renderOutput(isScrubbing);
+};
+
+window.toggleLock = (type) => {
+    if (type === 'ab') isAbLocked = !isAbLocked;
+    else if (type === 'ink') isInkLocked = !isInkLocked;
+    else if (type === 'link') isLinked = !isLinked;
+    updateResizeInputs();
+};
+
+window.resetDimensions = (type) => {
+    if (type === 'ab') {
+        resizeState.abW = resizeState.origAbW;
+        resizeState.abH = resizeState.origAbH;
+    } else if (type === 'ink') {
+        resizeState.inkW = resizeState.origInkW;
+        resizeState.inkH = resizeState.origInkH;
+        resizeState.inkX = resizeState.origInkX;
+        resizeState.inkY = resizeState.origInkY;
+    }
+    updateResizeInputs();
+    applyResizeMath(false);
+    saveResizeState();
+};
+
+window.alignCenter = (axis) => {
+    if (axis === 'h') resizeState.inkX = (resizeState.abW - resizeState.inkW) / 2;
+    else resizeState.inkY = (resizeState.abH - resizeState.inkH) / 2;
+    applyResizeMath(false);
+    saveResizeState();
+};
+
+window.fitToBounds = () => {
+    resizeState.abW = resizeState.inkW; resizeState.abH = resizeState.inkH;
+    resizeState.inkX = 0; resizeState.inkY = 0;
+    updateResizeInputs(); applyResizeMath(false);
+    saveResizeState();
+};
+
+window.openResizePanel = () => {
+    if (!globalOptimizedSvg) return;
+    resizeBackupSvg = globalOptimizedSvg.cloneNode(true);
+    let liveSvg = previewArea.querySelector('svg:not(.icon-svg)');
+    if (!liveSvg) return;
+    let liveWrapper = ensureInkWrapper(liveSvg);
+    let globalWrapper = ensureInkWrapper(globalOptimizedSvg);
+
+    let oldTransform = liveWrapper.getAttribute('transform');
+    liveWrapper.removeAttribute('transform');
+    let bbox; try { bbox = liveWrapper.getBBox(); } catch(e) { bbox = {x:0, y:0, width:128, height:128}; }
+    if (oldTransform) liveWrapper.setAttribute('transform', oldTransform);
+
+    resizeState.baseW = bbox.width || 0.1; resizeState.baseH = bbox.height || 0.1;
+    resizeState.baseX = bbox.x || 0; resizeState.baseY = bbox.y || 0;
+
+    let vb = globalOptimizedSvg.getAttribute('viewBox');
+    let abX = 0, abY = 0;
+    if (vb) {
+        let p = vb.trim().split(/[\s,]+/);
+        if (p.length === 4) {
+            abX = parseFloat(p[0]) || 0;
+            abY = parseFloat(p[1]) || 0;
+            resizeState.abW = parseFloat(p[2]) || 128; 
+            resizeState.abH = parseFloat(p[3]) || 128;
+        } else {
+            resizeState.abW = parseFloat(p[0]) || 128; 
+            resizeState.abH = parseFloat(p[1]) || 128;
+        }
+    } else {
+        resizeState.abW = parseFloat(globalOptimizedSvg.getAttribute('width')) || 128;
+        resizeState.abH = parseFloat(globalOptimizedSvg.getAttribute('height')) || 128;
+    }
+
+    let sx = parseFloat(globalWrapper.getAttribute('data-pf-sx')); if (isNaN(sx)) sx = 1;
+    let sy = parseFloat(globalWrapper.getAttribute('data-pf-sy')); if (isNaN(sy)) sy = 1;
+    let tx = parseFloat(globalWrapper.getAttribute('data-pf-tx')); if (isNaN(tx)) tx = 0;
+    let ty = parseFloat(globalWrapper.getAttribute('data-pf-ty')); if (isNaN(ty)) ty = 0;
+
+    resizeState.inkW = resizeState.baseW * sx; resizeState.inkH = resizeState.baseH * sy;
+    resizeState.inkX = (resizeState.baseX * sx) + tx - abX; 
+    resizeState.inkY = (resizeState.baseY * sy) + ty - abY;
+
+    resizeState.origAbW = resizeState.abW;
+    resizeState.origAbH = resizeState.abH;
+    resizeState.origInkW = resizeState.inkW;
+    resizeState.origInkH = resizeState.inkH;
+    resizeState.origInkX = resizeState.inkX;
+    resizeState.origInkY = resizeState.inkY;
+
+    // Reset History Stack
+    resizeHistory = [];
+    resizeHistoryIndex = -1;
+
+    updateResizeInputs();
+    $('resizePanel').style.display = 'flex';
+    saveResizeState(); // Push initial state to history
+};
+
+window.cancelResize = () => {
+    globalOptimizedSvg = resizeBackupSvg.cloneNode(true);
+    $('resizePanel').style.display = 'none'; renderOutput(false);
+};
+
+window.confirmResize = () => { $('resizePanel').style.display = 'none'; renderOutput(false); };
+
+const initPanelInputs = () => {
+    
+    // Globally applied App-Like Text Input UI
+    const setupAppLikeInput = (inp) => {
+        let isFirstType = false;
+        inp.addEventListener('focus', function() { this.classList.add('app-input-grey'); isFirstType = true; setTimeout(() => this.select(), 0); });
+        inp.addEventListener('keydown', function(e) { if (isFirstType && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) { this.value = ''; this.classList.remove('app-input-grey'); isFirstType = false; }});
+        inp.addEventListener('input', function() { this.classList.remove('app-input-grey'); isFirstType = false; });
+        inp.addEventListener('blur', function() { this.classList.remove('app-input-grey'); isFirstType = false; window.getSelection().removeAllRanges(); });
+    };
+
+    const sync = (id, field, isAb, isW) => {
+        let inputEl = $(id);
+        setupAppLikeInput(inputEl);
+        
+        inputEl.addEventListener('input', e => {
+            if (e.target.value === '') return; 
+            let val = parseFloat(e.target.value); 
+            if (isNaN(val) || val <= 0.01) return;
+            
+            let oldVal = resizeState[field];
+            let ratio = val / oldVal;
+            
+            if (isLinked) {
+                resizeState.abW *= ratio;
+                resizeState.abH *= ratio;
+                resizeState.inkW *= ratio;
+                resizeState.inkH *= ratio;
+                resizeState.inkX *= ratio;
+                resizeState.inkY *= ratio;
+            } else {
+                if (isAb) {
+                    resizeState[field] = val;
+                    if (isAbLocked) {
+                        if (isW) resizeState.abH *= ratio;
+                        else resizeState.abW *= ratio;
+                    }
+                } else {
+                    let oldInkW = resizeState.inkW;
+                    let oldInkH = resizeState.inkH;
+                    
+                    resizeState[field] = val;
+                    if (isInkLocked) {
+                        if (isW) resizeState.inkH *= ratio;
+                        else resizeState.inkW *= ratio;
+                    }
+                    
+                    resizeState.inkX -= (resizeState.inkW - oldInkW) / 2;
+                    resizeState.inkY -= (resizeState.inkH - oldInkH) / 2;
+                }
+            }
+            updateResizeInputs(); applyResizeMath(true);
+        });
+
+        inputEl.addEventListener('change', e => { applyResizeMath(false); saveResizeState(); });
+
+        inputEl.addEventListener('blur', e => {
+            if (e.target.value === '' || isNaN(parseFloat(e.target.value))) {
+                e.target.value = resizeState[field].toFixed(2);
+            }
+        });
+    };
+
+    sync('inpAbW', 'abW', true, true); sync('inpAbH', 'abH', true, false);
+    sync('inpInkW', 'inkW', false, true); sync('inpInkH', 'inkH', false, false);
+
+    const makeScrub = (scrubId, inpId) => {
+        let el = $(scrubId), inp = $(inpId), isDragging = false, startX, startVal, scrubRaf;
+        el.addEventListener('pointerdown', e => {
+            isDragging = true; startX = e.clientX; startVal = parseFloat(inp.value) || 0;
+            document.body.classList.add('is-dragging-ew'); el.setPointerCapture(e.pointerId);
+        });
+        el.addEventListener('pointermove', e => {
+            if (!isDragging) return;
+            let delta = (e.clientX - startX) * 0.5;
+            inp.value = Math.max(0.1, startVal + delta).toFixed(2);
+            if (scrubRaf) cancelAnimationFrame(scrubRaf);
+            scrubRaf = requestAnimationFrame(() => inp.dispatchEvent(new Event('input')));
+        });
+        const stop = e => { 
+            if(isDragging) { 
+                isDragging = false; 
+                document.body.classList.remove('is-dragging-ew'); 
+                el.releasePointerCapture(e.pointerId); 
+                applyResizeMath(false); 
+                saveResizeState();
+            } 
+        };
+        el.addEventListener('pointerup', stop); el.addEventListener('pointercancel', stop);
+    };
+    makeScrub('scrubAbW', 'inpAbW'); makeScrub('scrubAbH', 'inpAbH');
+    makeScrub('scrubInkW', 'inpInkW'); makeScrub('scrubInkH', 'inpInkH');
+
+    const header = $('resizePanelHeader'), panel = $('resizePanel');
+    let isDraggingWin = false, sX, sY, sL, sT;
+    
+    header.addEventListener('pointerdown', e => {
+        // Prevent the window from dragging if the user is explicitly trying to click Undo/Redo
+        if (e.target.closest('.fp-reset-btn')) return;
+        
+        isDraggingWin = true; sX = e.clientX; sY = e.clientY;
+        const r = panel.getBoundingClientRect();
+        panel.style.transform = 'none'; panel.style.left = r.left + 'px'; panel.style.top = r.top + 'px';
+        sL = r.left; sT = r.top; header.setPointerCapture(e.pointerId);
+    });
+    
+    header.addEventListener('pointermove', e => {
+        if (!isDraggingWin) return;
+        let newL = sL + e.clientX - sX;
+        let newT = sT + e.clientY - sY;
+        let maxL = window.innerWidth - panel.offsetWidth;
+        let maxT = window.innerHeight - panel.offsetHeight;
+        
+        newL = Math.max(0, Math.min(newL, maxL));
+        newT = Math.max(0, Math.min(newT, maxT));
+
+        panel.style.left = newL + 'px'; 
+        panel.style.top = newT + 'px';
+    });
+    
+    const stopWin = e => { if (isDraggingWin) { isDraggingWin = false; header.releasePointerCapture(e.pointerId); } };
+    header.addEventListener('pointerup', stopWin); header.addEventListener('pointercancel', stopWin);
+};
+
+document.addEventListener('DOMContentLoaded', initPanelInputs);
