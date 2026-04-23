@@ -157,19 +157,33 @@ const initCustomScroll = (contentEl, wrapEl) => {
         contentEl.scrollTop = current + diff * 0.22;
         smoothRAF = requestAnimationFrame(easeTick);
     };
-    wrapEl.addEventListener('wheel', (e) => {
+    const normalizeDelta = (e) => {
+        // DOM_DELTA_LINE (1) and DOM_DELTA_PAGE (2) appear on some browsers/devices
+        // (notably Firefox and iPad Safari with external mice). Convert to pixels.
+        let dy = e.deltaY;
+        if (e.deltaMode === 1) dy *= 16;       // line -> ~16px
+        else if (e.deltaMode === 2) dy *= contentEl.clientHeight; // page
+        return dy;
+    };
+    const onWheel = (e) => {
         const sh = contentEl.scrollHeight, ch = contentEl.clientHeight;
         if (sh <= ch + 1) return;
+        const dy = normalizeDelta(e);
+        if (!dy) return;
         const maxScroll = sh - ch;
         const base = smoothTarget !== null ? smoothTarget : contentEl.scrollTop;
         const atTop = base <= 0;
         const atBottom = base >= maxScroll - 0.5;
-        if ((e.deltaY < 0 && atTop) || (e.deltaY > 0 && atBottom)) return;
+        if ((dy < 0 && atTop) || (dy > 0 && atBottom)) return;
         e.preventDefault();
-        smoothTarget = Math.max(0, Math.min(maxScroll, base + e.deltaY));
+        smoothTarget = Math.max(0, Math.min(maxScroll, base + dy));
         showScroll();
         if (!smoothRAF) smoothRAF = requestAnimationFrame(easeTick);
-    }, { passive: false });
+    };
+    // Capture phase so we intercept before textareas/inputs consume the event
+    // (iPad Safari with external mouse lets textareas swallow wheel otherwise).
+    wrapEl.addEventListener('wheel', onWheel, { passive: false, capture: true });
+    track.addEventListener('wheel', onWheel, { passive: false });
 
     track.addEventListener('pointerenter', () => {
         const sh = contentEl.scrollHeight, ch = contentEl.clientHeight;
