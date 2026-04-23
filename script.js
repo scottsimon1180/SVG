@@ -105,11 +105,12 @@ const initCustomScroll = (contentEl, wrapEl) => {
 
     const updateScroll = () => {
         const sh = contentEl.scrollHeight, ch = contentEl.clientHeight;
-        if (sh <= ch + 1 || ch === 0) { 
+        if (sh <= ch + 1 || ch === 0) {
             thumb.style.opacity = '0';
             track.style.pointerEvents = 'none';
-            return; 
+            return;
         }
+        thumb.style.opacity = '';
         track.style.pointerEvents = 'auto';
         const ratio = ch / sh;
         const thumbH = Math.max(30, ch * ratio);
@@ -132,14 +133,43 @@ const initCustomScroll = (contentEl, wrapEl) => {
         }, 800);
     };
 
-    contentEl.addEventListener('scroll', () => { 
-        updateScroll(); 
-        showScroll(); 
+    contentEl.addEventListener('scroll', () => {
+        updateScroll();
+        showScroll();
         opPopup.style.display = 'none';
         strokePopup.style.display = 'none';
         document.querySelectorAll('.slider-trigger').forEach(el => el.classList.remove('is-active'));
     }, { passive: true });
     new ResizeObserver(updateScroll).observe(contentEl);
+
+    // Smooth wheel scroll: forwards wheel events from anywhere inside the wrapper
+    // (including sub-controls and the scroll track) and eases toward the target.
+    let smoothTarget = null, smoothRAF = 0;
+    const easeTick = () => {
+        const current = contentEl.scrollTop;
+        const diff = smoothTarget - current;
+        if (Math.abs(diff) < 0.5) {
+            contentEl.scrollTop = smoothTarget;
+            smoothRAF = 0;
+            smoothTarget = null;
+            return;
+        }
+        contentEl.scrollTop = current + diff * 0.22;
+        smoothRAF = requestAnimationFrame(easeTick);
+    };
+    wrapEl.addEventListener('wheel', (e) => {
+        const sh = contentEl.scrollHeight, ch = contentEl.clientHeight;
+        if (sh <= ch + 1) return;
+        const maxScroll = sh - ch;
+        const base = smoothTarget !== null ? smoothTarget : contentEl.scrollTop;
+        const atTop = base <= 0;
+        const atBottom = base >= maxScroll - 0.5;
+        if ((e.deltaY < 0 && atTop) || (e.deltaY > 0 && atBottom)) return;
+        e.preventDefault();
+        smoothTarget = Math.max(0, Math.min(maxScroll, base + e.deltaY));
+        showScroll();
+        if (!smoothRAF) smoothRAF = requestAnimationFrame(easeTick);
+    }, { passive: false });
 
     track.addEventListener('pointerenter', () => {
         const sh = contentEl.scrollHeight, ch = contentEl.clientHeight;
