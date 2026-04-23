@@ -21,51 +21,26 @@
     --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   }
 
-  /* Core App Feel - Disable Global Selection */
   body, html {
-    margin: 0; padding: 0;
-    font-family: var(--font);
-    background: transparent;
-    overflow: hidden;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    touch-action: none;
+    margin: 0; padding: 0; font-family: var(--font); background: transparent;
+    overflow: hidden; -webkit-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none; touch-action: none;
   }
 
-  /* Global active dragging state for the pointer hand */
-  body.is-dragging, body.is-dragging * {
-    cursor: pointer !important; 
-  }
-
-  /* Eyedropper Override States */
+  body.is-dragging, body.is-dragging * { cursor: pointer !important; }
   body.is-eyedropper-active, body.is-eyedropper-active * {
     cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M14.31,7.57l2.11,2.11l-4.29,4.29c-1.47,1.47-3.1,2.78-4.85,3.9L4.09,19.9l2.03-3.18c1.12-1.75,2.43-3.38,3.9-4.85L14.31,7.57M14.31,6.26l-4.95,4.95c-1.52,1.52-2.87,3.2-4.02,5.01l-3.2,5.01v0.62h0.62l5.01-3.2c1.81-1.16,3.49-2.5,5.01-4.02l4.95-4.95L14.31,6.26L14.31,6.26zM21.94,4.16c-0.22-1.04-1.05-1.87-2.09-2.09c-0.93-0.19-1.79,0.09-2.41,0.64l-0.01-0.01l-2.07,2.07l-0.4-0.4l0,0c-0.37-0.37-0.9-0.57-1.48-0.48c-0.72,0.11-1.31,0.7-1.42,1.42c-0.09,0.58,0.11,1.11,0.48,1.48l0,0l4.64,4.64l0,0c0.37,0.37,0.9,0.57,1.48,0.48c0.72-0.11,1.31-0.7,1.42-1.42c0.09-0.58-0.11-1.11-0.48-1.48l0,0l-0.37-0.37l1.95-1.95c0.01-0.01,0.02-0.02,0.02-0.02l0.09-0.09l0,0C21.85,5.95,22.13,5.09,21.94,4.16zM19.27,2.94c0.13,0,0.26,0.01,0.39,0.04c0.68,0.14,1.23,0.69,1.37,1.37c0.12,0.58-0.03,1.16-0.42,1.6l-0.05,0.06l-0.02,0.02l-1.95,1.95l-0.66,0.66l0.66,0.66l0.37,0.37c0.18,0.18,0.26,0.43,0.22,0.68c-0.05,0.32-0.32,0.59-0.64,0.64C18.49,11,18.44,11,18.4,11c-0.21,0-0.4-0.08-0.55-0.23l-4.64-4.64C13.04,5.96,12.96,5.71,13,5.46c0.05-0.32,0.32-0.59,0.64-0.64c0.04-0.01,0.09-0.01,0.13-0.01c0.21,0,0.4,0.08,0.55,0.23l0.4,0.4l0.66,0.66l0.66-0.66l1.95-1.95l0.09-0.08C18.4,3.11,18.83,2.94,19.27,2.94M19.27,2.01c-0.7,0-1.34,0.27-1.82,0.7l-0.01-0.01l-2.07,2.07l-0.4-0.4l0,0c-0.31-0.31-0.74-0.5-1.21-0.5c-0.09,0-0.18,0.01-0.27,0.02c-0.72,0.11-1.31,0.7-1.42,1.42c-0.09,0.58,0.11,1.11,0.48,1.48l0,0l4.64,4.64l0,0c0.31,0.31,0.74,0.5,1.21,0.5c0.09,0,0.18-0.01,0.27-0.02c0.72-0.11,1.31-0.7,1.42-1.42c0.09-0.58-0.11-1.11-0.48-1.48l0,0l-0.37-0.37l1.95-1.95c0.01-0.01,0.02-0.02,0.02-0.02l0.09-0.09l0,0c0.55-0.62,0.83-1.48,0.64-2.41c-0.22-1.04-1.05-1.87-2.09-2.09C19.65,2.03,19.46,2.01,19.27,2.01L19.27,2.01zM2.65,21.92l0.11-0.07l-0.62-0.62l-0.07,0.11C1.83,21.72,2.27,22.16,2.65,21.92z" fill="%23f2f2f7" stroke="rgba(0,0,0,0.5)" stroke-width="0.5"/></svg>') 2 22, crosshair !important;
   }
-  body.is-eyedropper-active .cp-modal {
-    pointer-events: none !important;
-  }
-  body.is-eyedropper-active #cpEyedropperBtn {
-    pointer-events: auto !important;
-  }
+  body.is-eyedropper-active .cp-modal { pointer-events: none !important; }
+  body.is-eyedropper-active #cpEyedropperBtn { pointer-events: auto !important; }
 
-  input[type="text"], input[type="number"] {
-    -webkit-user-select: text;
-    -moz-user-select: text;
-    -ms-user-select: text;
-    user-select: text;
-    caret-color: transparent; 
-  }
-
-  /* App-like "Replace on Type" state */
+  input[type="text"], input[type="number"] { -webkit-user-select: text; user-select: text; caret-color: transparent; }
   .app-input-grey { color: var(--text-tertiary) !important; }
   .app-input-grey::selection { background: transparent; color: var(--text-tertiary); }
 
   button.standard, button.primary {
     display: inline-flex; align-items: center; justify-content: center; gap: 6px; 
-    border-radius: 10px; padding: 10px 18px; 
-    font-size: 13px; font-weight: 500; letter-spacing: -0.01em; 
+    border-radius: 10px; padding: 10px 18px; font-size: 13px; font-weight: 500; 
     cursor: default; transition: 0.15s ease-out; box-sizing: border-box;
   }
   button.standard { background: rgba(255, 255, 255, 0.08); color: var(--text); border: none; }
@@ -75,78 +50,36 @@
   button.standard:active, button.primary:active { transform: scale(0.97); opacity: 0.7; }
 
   .cp-modal-overlay {
-    position: fixed; inset: 0; background: transparent;
-    z-index: 9999; display: none; align-items: center; justify-content: center;
-    pointer-events: none; /* Allows pointer pass-through */
+    position: fixed; inset: 0; background: transparent; z-index: 9999; display: none; 
+    align-items: center; justify-content: center; pointer-events: none;
   }
   .cp-modal {
     background: var(--surface); border: 1px solid var(--border-strong); border-radius: 14px;
-    width: 560px; pointer-events: auto; /* Ensures modal remains clickable */
-    box-shadow: 0 24px 48px rgba(0,0,0,0.4); display: flex; flex-direction: column;
-    overflow: hidden; animation: cpModalIn 0.2s ease-out;
+    width: 560px; pointer-events: auto; box-shadow: 0 24px 48px rgba(0,0,0,0.4); 
+    display: flex; flex-direction: column; overflow: hidden; animation: cpModalIn 0.2s ease-out;
   }
   @keyframes cpModalIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
   
   .cp-modal-header {
     padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; 
     justify-content: space-between; align-items: center; background: var(--bg-secondary);
-    cursor: grab;
+    cursor: grab; position: relative;
   }
-  .cp-modal-header:active {
-    cursor: grabbing;
-  }
+  .cp-modal-header:active { cursor: grabbing; }
   .cp-modal-title { font-size: 14px; font-weight: 600; color: var(--text); margin: 0; cursor: inherit; }
   .cp-modal-close { cursor: default; color: var(--text-secondary); font-size: 18px; line-height: 1; padding: 0 4px; }
   .cp-modal-close:hover { color: var(--text); }
   
   .cp-modal-body { display: flex; padding: 20px; gap: 24px; }
   
-  .cp-left { display: flex; flex-direction: column; width: 224px; } 
+  .cp-left { display: flex; flex-direction: column; width: 224px; position: relative; } 
   .cp-canvas-row { display: flex; gap: 12px; margin-top: 12px; }
 
-  /* CSS Accelerated Backgrounds replacing Canvas */
-  .cp-track-wrap { 
-    position: relative; width: 12px; height: 200px; border-radius: 6px; 
-    cursor: default; flex-shrink: 0; 
+  /* Tab Bars */
+  .cp-fill-mode-bar { 
+    display: flex; background: var(--bg); border-radius: 6px; padding: 2px; 
+    border: 1px solid var(--border-strong); width: 160px; 
   }
-  .cp-track-bg { 
-    width: 100%; height: 100%; position: absolute; inset: 0; pointer-events: none; 
-    border-radius: inherit; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.2); 
-  }
-  .cp-track-bg.mode-spectrum { background: linear-gradient(to bottom, #f00 0%, #ff0 16.66%, #0f0 33.33%, #0ff 50%, #00f 66.66%, #f0f 83.33%, #f00 100%); }
-  .cp-track-cursor {
-    position: absolute; left: 50%; width: 16px; height: 16px; border-radius: 50%; background: #fff;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,0,0,0.08); 
-    transform: translate(-50%, -50%); pointer-events: none;
-  }
-
-  .cp-main-canvas-wrap { 
-      position: relative; width: 200px; height: 200px; border-radius: 4px; 
-      overflow: hidden; cursor: default; flex-shrink: 0; transition: border-radius 0.2s;
-  }
-  .cp-main-bg { width: 100%; height: 100%; position: absolute; inset: 0; pointer-events: none; border-radius: inherit; }
-  .cp-main-bg.mode-wheel {
-      background: radial-gradient(circle closest-side, #ffffff 0%, transparent 100%), conic-gradient(red 0deg, yellow 60deg, lime 120deg, cyan 180deg, blue 240deg, magenta 300deg, red 360deg);
-  }
-  .cp-main-darken { position: absolute; inset: 0; background: #000; pointer-events: none; border-radius: inherit; }
-  
-  .cp-cursor {
-    position: absolute; width: 12px; height: 12px; border-radius: 50%;
-    border: 2px solid #fff; box-shadow: 0 0 2px rgba(0,0,0,0.5), inset 0 0 2px rgba(0,0,0,0.5);
-    transform: translate(-50%, -50%); pointer-events: none;
-  }
-
-  .cp-presets-grid {
-    display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; margin-top: 14px; width: 100%;
-  }
-  .cp-preset-swatch {
-    width: 100%; aspect-ratio: 1; border-radius: 3px; cursor: default;
-    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.2); transition: 0.1s;
-  }
-  .cp-preset-swatch:hover { box-shadow: inset 0 0 0 1px rgba(0,0,0,0.4), 0 0 0 1px var(--text-secondary); transform: scale(1.15); z-index: 2; position: relative; }
-
-  .cp-right { flex: 1; display: flex; flex-direction: column; }
-  
   .cp-segment-bar { display: flex; background: var(--bg); border-radius: 6px; padding: 2px; border: 1px solid var(--border-strong); }
   .cp-segment-btn {
     flex: 1; text-align: center; padding: 4px 0; font-size: 11px; font-weight: 600; 
@@ -154,6 +87,82 @@
   }
   .cp-segment-btn.active { background: var(--surface-raised); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
 
+  /* Gradient Editor UI */
+  .cp-grad-editor { display: flex; flex-direction: column; height: 236px; width: 100%; margin-bottom: auto; }
+  .cp-grad-toolbar { display: flex; gap: 8px; margin-bottom: 14px; }
+  .cp-grad-tb-btn {
+    flex: 1; height: 38px; border-radius: 8px; background: var(--surface-raised); border: 1px solid var(--border-strong);
+    display: flex; align-items: center; justify-content: center; gap: 8px; color: var(--text-secondary); cursor: pointer; transition: 0.15s;
+  }
+  .cp-grad-tb-btn:hover { background: var(--bg-hover); color: var(--text); }
+  .cp-grad-tb-btn:active { transform: scale(0.97); }
+  .cp-grad-tb-btn svg { width: 22px; height: 22px; fill: currentColor; }
+  
+  .cp-grad-colors-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .cp-grad-colors-title { font-size: 12px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+  .cp-grad-btn { width: 28px; height: 28px; border-radius: 6px; background: var(--surface-raised); border: 1px solid var(--border-strong); display: flex; align-items: center; justify-content: center; color: var(--text-secondary); cursor: pointer; transition: 0.15s; }
+  .cp-grad-btn:hover { color: var(--text); background: var(--bg-hover); }
+  .cp-grad-btn:active { transform: scale(0.95); }
+  
+  .cp-grad-colors-list { display: flex; flex-direction: column; gap: 6px; overflow-y: auto; flex: 1; padding-right: 4px; margin-right: -4px; position: relative; }
+  .cp-grad-colors-list::-webkit-scrollbar { width: 4px; }
+  .cp-grad-colors-list::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+  
+  .cp-grad-row { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 8px; background: var(--surface-raised); border: 1px solid transparent; cursor: pointer; transition: 0.15s; position: relative; }
+  .cp-grad-row:hover { background: var(--bg-hover); }
+  .cp-grad-row.active { background: rgba(0, 122, 255, 0.15); border-color: var(--accent); }
+  .cp-grad-row.is-dragging { z-index: 100; opacity: 0.95; box-shadow: 0 8px 24px rgba(0,0,0,0.5); transform: scale(1.02); }
+  .cp-grad-row-placeholder { width: 100%; border-radius: 8px; background: rgba(255,255,255,0.05); border: 2px dashed var(--border-strong); box-sizing: border-box; }
+  
+  .cp-grad-swatch-wrap { width: 20px; height: 20px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.4), 0 0 0 1px var(--border-strong); flex-shrink: 0; pointer-events: none; overflow: hidden; position: relative; background-image: linear-gradient(45deg, #333 25%, transparent 25%), linear-gradient(-45deg, #333 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #333 75%), linear-gradient(-45deg, transparent 75%, #333 75%); background-size: 8px 8px; background-position: 0 0, 0 4px, 4px -4px, -4px 0px; background-color: #222; }
+  .cp-grad-swatch { width: 100%; height: 100%; position: absolute; inset: 0; pointer-events: none; }
+  
+  .cp-grad-slider-trigger:hover { background: var(--bg-hover) !important; color: var(--text) !important; border-color: var(--text-secondary) !important; }
+  .cp-grad-slider-trigger.is-active { background: rgba(0, 122, 255, 0.15) !important; color: var(--accent) !important; border-color: var(--accent) !important; }
+  
+  .cp-grad-drag { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; color: var(--text-tertiary); cursor: grab; flex-shrink: 0; }
+  .cp-grad-drag:active { cursor: grabbing; }
+  .cp-grad-drag svg { width: 16px; height: 16px; pointer-events: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* Generic Slider Popup for Gradient Editing */
+  .cp-slider-popup { position: fixed; background: var(--surface-raised); border: 1px solid var(--border-strong); border-radius: 6px; z-index: 10001; display: none; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,0,0,0.2); }
+  .cp-slider-popup.horizontal { width: 140px; height: 34px; padding: 0 10px; box-sizing: border-box; }
+  .cp-slider-popup input[type=range] { margin: 0; -webkit-appearance: none; background: transparent; outline: none; cursor: pointer; touch-action: none; width: 100%; height: 12px; }
+  .cp-slider-popup input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.2); }
+  .cp-slider-popup input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #fff; margin-top: -6px; box-shadow: 0 1px 3px rgba(0,0,0,0.5); border: 1px solid rgba(0,0,0,0.1); }
+
+  /* Deg Overlay (Inline Angle Picker) */
+  .cp-deg-overlay { position: absolute; inset: 0; background: var(--surface); z-index: 10; display: none; flex-direction: column; border-radius: 4px; }
+  .deg-sheet { display: flex; flex-direction: column; align-items: center; padding: 10px 0; height: 100%; box-sizing: border-box; }
+  .deg-big-wrap { width: 80px; height: 80px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; }
+  .deg-big-rotator { width: 80px; height: 80px; transform-origin: 50% 50%; display: flex; align-items: center; justify-content: center; will-change: transform; }
+  .deg-big-rotator svg { width: 80px; height: 80px; display: block; }
+  .deg-angle-input { width: 70px; padding: 4px; font-size: 14px; font-weight: 800; text-align: center; border-radius: 8px; border: 1px solid var(--border-strong); -webkit-appearance: none; outline: none; background: var(--surface-raised); color: var(--text); margin-bottom: 8px; }
+  .deg-angle-input:focus { border-color: var(--accent); }
+  .preset-row { display: flex; justify-content: center; gap: 4px; width: 100%; margin-bottom: 6px; }
+  .preset-btn { height: 26px; padding: 0 2px; border: 1px solid var(--border-strong); border-radius: 6px; font-weight: 700; font-size: 10px; background: var(--surface-raised); color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; flex: 1; }
+  .preset-btn:hover { background: var(--bg-hover); color: var(--text); }
+  .preset-btn:active { transform: scale(0.97); }
+
+  /* Core Canvas Replacements */
+  .cp-track-wrap { position: relative; width: 12px; height: 200px; border-radius: 6px; cursor: default; flex-shrink: 0; }
+  .cp-track-bg { width: 100%; height: 100%; position: absolute; inset: 0; pointer-events: none; border-radius: inherit; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.2); }
+  .cp-track-bg.mode-spectrum { background: linear-gradient(to bottom, #f00 0%, #ff0 16.66%, #0f0 33.33%, #0ff 50%, #00f 66.66%, #f0f 83.33%, #f00 100%); }
+  .cp-track-cursor { position: absolute; left: 50%; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,0,0,0.08); transform: translate(-50%, -50%); pointer-events: none; }
+
+  .cp-main-canvas-wrap { position: relative; width: 200px; height: 200px; border-radius: 4px; overflow: hidden; cursor: default; flex-shrink: 0; transition: border-radius 0.2s; }
+  .cp-main-bg { width: 100%; height: 100%; position: absolute; inset: 0; pointer-events: none; border-radius: inherit; }
+  .cp-main-bg.mode-wheel { background: radial-gradient(circle closest-side, #ffffff 0%, transparent 100%), conic-gradient(red 0deg, yellow 60deg, lime 120deg, cyan 180deg, blue 240deg, magenta 300deg, red 360deg); }
+  .cp-main-darken { position: absolute; inset: 0; background: #000; pointer-events: none; border-radius: inherit; }
+  
+  .cp-cursor { position: absolute; width: 12px; height: 12px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 2px rgba(0,0,0,0.5), inset 0 0 2px rgba(0,0,0,0.5); transform: translate(-50%, -50%); pointer-events: none; }
+
+  .cp-presets-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; margin-top: 14px; width: 100%; }
+  .cp-preset-swatch { width: 100%; aspect-ratio: 1; border-radius: 3px; cursor: default; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.2); transition: 0.1s; }
+  .cp-preset-swatch:hover { box-shadow: inset 0 0 0 1px rgba(0,0,0,0.4), 0 0 0 1px var(--text-secondary); transform: scale(1.15); z-index: 2; position: relative; }
+
+  .cp-right { flex: 1; display: flex; flex-direction: column; }
+  
   .cp-sliders-wrap { display: flex; flex-direction: column; gap: 14px; }
   .cp-slider-row { display: flex; align-items: center; gap: 8px; }
   .cp-slider-lbl { width: 14px; font-size: 11px; font-weight: 600; color: var(--text-secondary); cursor: default; }
@@ -161,83 +170,43 @@
   .cp-divider { border: none; border-top: 1px solid var(--border-strong); margin: 14px 0 10px 0; width: 100%; }
   .cp-section-label { font-size: 11px; font-weight: 700; color: var(--text-secondary); margin-bottom: 10px; letter-spacing: 0.5px; cursor: default; }
 
-  /* GPU Accelerated CSS Variables for Sliders */
-  .cp-slider-inp { 
-    flex: 1; -webkit-appearance: none; appearance: none; height: 10px; border-radius: 5px; 
-    outline: none; margin: 0; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.2); cursor: default;
-    background: var(--slider-bg, #000); 
-  }
-  .cp-slider-inp::-webkit-slider-thumb { 
-    -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; 
-    background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,0,0,0.08); 
-    cursor: default;
-  }
+  .cp-slider-inp { flex: 1; -webkit-appearance: none; appearance: none; height: 10px; border-radius: 5px; outline: none; margin: 0; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.2); cursor: default; background: var(--slider-bg, #000); }
+  .cp-slider-inp::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,0,0,0.08); cursor: default; }
   
-  .cp-num-inp { 
-    width: 28px; background: var(--surface-raised); border: 1px solid var(--border-strong); 
-    border-radius: 4px; color: var(--text); font-size: 11px; text-align: center; padding: 4px 2px; 
-    font-family: monospace; outline: none; flex-shrink: 0; cursor: default;
-  }
+  .cp-num-inp { width: 28px; background: var(--surface-raised); border: 1px solid var(--border-strong); border-radius: 4px; color: var(--text); font-size: 11px; text-align: center; padding: 4px 2px; font-family: monospace; outline: none; flex-shrink: 0; cursor: default; }
   .cp-num-inp:focus { cursor: text; border-color: var(--accent); }
   .cp-num-inp::-webkit-outer-spin-button, .cp-num-inp::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
-  /* Footer Layout */
-  .cp-modal-footer { 
-    padding: 12px 16px; border-top: 1px solid var(--border); 
-    display: flex; justify-content: space-between; align-items: center; 
-    background: var(--bg-secondary); 
-  }
+  .cp-modal-footer { padding: 12px 16px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--bg-secondary); }
   .cp-footer-left { display: flex; gap: 8px; align-items: center; }
   .cp-swatch-single { width: 44px; height: 44px; border-radius: 6px; box-shadow: inset 0 0 0 1px var(--border-strong); background: #000; flex-shrink: 0; }
   
-  .cp-hex-modal-wrap { 
-    width: 68px; height: 32px; display: flex; align-items: center; background: var(--surface-raised); 
-    border: 1px solid var(--border-strong); border-radius: 4px; padding: 4px 6px; gap: 2px; 
-    cursor: text; transition: 0.15s; box-sizing: border-box; 
-  }
+  .cp-hex-modal-wrap { width: 68px; height: 32px; display: flex; align-items: center; background: var(--surface-raised); border: 1px solid var(--border-strong); border-radius: 4px; padding: 4px 6px; gap: 2px; cursor: text; transition: 0.15s; box-sizing: border-box; }
   .cp-hex-modal-wrap:focus-within { border-color: var(--accent); }
   .cp-hex-hash { color: var(--text-tertiary); font-weight: 600; font-size: 12px; cursor: text; }
-  .cp-hex-modal-inp { 
-    background: transparent; border: none; color: var(--text); font-family: monospace; 
-    font-size: 12px; width: 100%; outline: none; text-transform: uppercase; padding: 0; 
-  }
+  .cp-hex-modal-inp { background: transparent; border: none; color: var(--text); font-family: monospace; font-size: 12px; width: 100%; outline: none; text-transform: uppercase; padding: 0; }
 
   body.is-ipad-os .cp-hex-modal-wrap { width: 72px; }
   
-  .cp-eyedropper-btn {
-    width: 32px; height: 32px; background: var(--surface-raised); border: 1px solid var(--border-strong);
-    border-radius: 4px; display: flex; align-items: center; justify-content: center;
-    color: var(--text-secondary); cursor: default; transition: 0.15s; flex-shrink: 0; box-sizing: border-box;
-  }
+  .cp-eyedropper-btn { width: 32px; height: 32px; background: var(--surface-raised); border: 1px solid var(--border-strong); border-radius: 4px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); cursor: default; transition: 0.15s; flex-shrink: 0; box-sizing: border-box; }
   .cp-eyedropper-btn:hover { background: var(--bg-hover); color: var(--text); border-color: var(--text-secondary); }
   .cp-eyedropper-btn:active { transform: scale(0.95); }
   .cp-eyedropper-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(0, 122, 255, 0.1); }
 
   .cp-footer-center { display: flex; justify-content: center; align-items: center; flex: 1; margin: 0 16px; gap: 12px; }
-  
-  .cp-add-btn {
-    width: 20px; height: 20px; background: var(--surface-raised); border: 1px solid var(--border-strong);
-    border-radius: 3px; display: flex; align-items: center; justify-content: center;
-    color: var(--text-secondary); cursor: default; transition: 0.15s; flex-shrink: 0;
-  }
+  .cp-add-btn { width: 20px; height: 20px; background: var(--surface-raised); border: 1px solid var(--border-strong); border-radius: 3px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); cursor: default; transition: 0.15s; flex-shrink: 0; }
   .cp-add-btn:hover { background: var(--bg-hover); color: var(--text); border-color: var(--text-secondary); }
   .cp-add-btn:active { transform: scale(0.95); }
 
   .cp-bank-grid { display: grid; grid-template-columns: repeat(7, 20px); grid-template-rows: repeat(2, 20px); gap: 4px; }
-  
   .cp-bank-swatch { width: 100%; height: 100%; border-radius: 3px; transition: 0.1s; -webkit-touch-callout: none; }
   .cp-bank-swatch.empty { background: rgba(0,0,0,0.25); box-shadow: inset 0 1px 3px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.03); cursor: default; }
   .cp-bank-swatch.filled { box-shadow: inset 0 0 0 1px rgba(0,0,0,0.2); cursor: default; }
   .cp-bank-swatch.filled:hover { box-shadow: inset 0 0 0 1px rgba(0,0,0,0.4), 0 0 0 1px var(--text-secondary); transform: scale(1.15); z-index: 2; position: relative; }
   .cp-footer-right { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
 
-  /* Context Menu (Delete Popup) */
-  .cp-context-menu {
-    position: fixed; z-index: 10000; display: none; background: var(--surface-raised);
-    border: 1px solid var(--border-strong); border-radius: 8px; box-shadow: 0 8px 16px rgba(0,0,0,0.5);
-    padding: 4px; opacity: 0; transform: translateY(6px) scale(0.95); 
-    transition: opacity 0.15s cubic-bezier(0.16, 1, 0.3, 1), transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
-  }
+  /* Context Menu */
+  .cp-context-menu { position: fixed; z-index: 10000; display: none; background: var(--surface-raised); border: 1px solid var(--border-strong); border-radius: 8px; box-shadow: 0 8px 16px rgba(0,0,0,0.5); padding: 4px; opacity: 0; transform: translateY(6px) scale(0.95); transition: opacity 0.15s cubic-bezier(0.16, 1, 0.3, 1), transform 0.15s cubic-bezier(0.16, 1, 0.3, 1); }
   .cp-context-menu.active { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
   .cp-context-action { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 6px; color: var(--text-secondary); cursor: default; transition: 0.15s ease-out; }
   .cp-context-action:hover { background: rgba(255, 59, 48, 0.15); color: #ff3b30; }
@@ -247,30 +216,64 @@
 <body>
 
   <div class="cp-context-menu" id="cpContextMenu">
-      <div class="cp-context-action" onclick="executeDelete()" title="Delete Swatch">
-          <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 24 24">
-            <g id="Layer_2">
-              <g><path d="M9.24,19.29c-0.3,0-0.5-0.19-0.51-0.48L8.45,8.71c-0.01-0.29,0.19-0.48,0.5-0.48c0.28,0,0.49,0.18,0.5,0.47l0.3,10.11C9.76,19.09,9.55,19.29,9.24,19.29zM12,19.29c-0.3,0-0.52-0.2-0.52-0.48V8.71c0-0.29,0.22-0.48,0.52-0.48c0.3,0,0.52,0.19,0.52,0.48v10.1C12.52,19.09,12.3,19.29,12,19.29zM14.76,19.29c-0.31,0-0.5-0.2-0.5-0.48l0.29-10.11c0.01-0.29,0.22-0.48,0.5-0.48c0.31,0,0.5,0.19,0.5,0.48l-0.29,10.1C15.25,19.11,15.06,19.29,14.76,19.29zM8.1,6.01h1.23V4.08c0-0.56,0.39-0.92,0.99-0.92h3.35c0.6,0,0.99,0.36,0.99,0.92v1.93h1.23v-2c0-1.25-0.81-2.01-2.14-2.01h-3.49C8.92,2,8.1,2.76,8.1,4.01V6.01zM3.9,6.61h16.2c0.32,0,0.58-0.27,0.58-0.58c0-0.32-0.26-0.59-0.58-0.59H3.9c-0.31,0-0.58,0.27-0.58,0.59C3.32,6.36,3.59,6.61,3.9,6.61zM7.89,22h8.23c1.2,0,2.05-0.82,2.11-2.02L18.9,6.43H5.11l0.67,13.55C5.83,21.19,6.67,22,7.89,22z" fill="currentColor" stroke="none"/></g>
-            </g>
-          </svg>
+      <div class="cp-context-action" onclick="executeDelete()" title="Delete Item">
+          <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.24,19.29c-0.3,0-0.5-0.19-0.51-0.48L8.45,8.71c-0.01-0.29,0.19-0.48,0.5-0.48c0.28,0,0.49,0.18,0.5,0.47l0.3,10.11C9.76,19.09,9.55,19.29,9.24,19.29zM12,19.29c-0.3,0-0.52-0.2-0.52-0.48V8.71c0-0.29,0.22-0.48,0.52-0.48c0.3,0,0.52,0.19,0.52,0.48v10.1C12.52,19.09,12.3,19.29,12,19.29zM14.76,19.29c-0.31,0-0.5-0.2-0.5-0.48l0.29-10.11c0.01-0.29,0.22-0.48,0.5-0.48c0.31,0,0.5,0.19,0.5,0.48l-0.29,10.1C15.25,19.11,15.06,19.29,14.76,19.29zM8.1,6.01h1.23V4.08c0-0.56,0.39-0.92,0.99-0.92h3.35c0.6,0,0.99,0.36,0.99,0.92v1.93h1.23v-2c0-1.25-0.81-2.01-2.14-2.01h-3.49C8.92,2,8.1,2.76,8.1,4.01V6.01zM3.9,6.61h16.2c0.32,0,0.58-0.27,0.58-0.58c0-0.32-0.26-0.59-0.58-0.59H3.9c-0.31,0-0.58,0.27-0.58,0.59C3.32,6.36,3.59,6.61,3.9,6.61zM7.89,22h8.23c1.2,0,2.05-0.82,2.11-2.02L18.9,6.43H5.11l0.67,13.55C5.83,21.19,6.67,22,7.89,22z" fill="currentColor" stroke="none"/></svg>
       </div>
+  </div>
+
+  <div class="cp-slider-popup horizontal" id="cpGradOpPopup">
+      <input type="range" min="0" max="100">
   </div>
 
   <div class="cp-modal-overlay" id="cpModalOverlay">
     <div class="cp-modal" id="cpModalContainer">
+      
       <div class="cp-modal-header">
-        <h4 class="cp-modal-title">Color Picker</h4>
-        <div class="cp-modal-close" onclick="closeCustomPicker()">×</div>
+        <div style="flex: 1; display: flex; align-items: center; pointer-events: none;">
+          <h4 class="cp-modal-title">Color Picker</h4>
+        </div>
+        <div class="cp-fill-mode-bar" onpointerdown="event.stopPropagation()">
+          <div class="cp-segment-btn active" id="btnModeSolid" onclick="setFillMode('solid')">Solid</div>
+          <div class="cp-segment-btn" id="btnModeGradient" onclick="setFillMode('gradient')">Gradient</div>
+        </div>
+        <div style="flex: 1; display: flex; justify-content: flex-end; pointer-events: auto;">
+          <div class="cp-modal-close" onclick="closeCustomPicker()">×</div>
+        </div>
       </div>
+      
       <div class="cp-modal-body">
         
-        <div class="cp-left">
-          <div class="cp-segment-bar">
+        <div class="cp-left" id="cpLeftPanel">
+          <div class="cp-segment-bar" id="solidLeftTabs">
             <div class="cp-segment-btn" id="btnModeSpectrum" onclick="setPickerMode('spectrum')">Spectrum</div>
             <div class="cp-segment-btn active" id="btnModeWheel" onclick="setPickerMode('wheel')">Wheel</div>
           </div>
           
-          <div class="cp-canvas-row">
+          <div id="gradientEditorArea" class="cp-grad-editor" style="display: none;">
+            <div class="cp-grad-toolbar">
+              <button class="cp-grad-tb-btn" id="tbGradAngle" title="Gradient Angle">
+                <div class="tb-angle-rotator" id="gradAngleRotator" style="width:18px; height:18px; transform-origin:50% 50%;">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="transparent" stroke="currentColor" stroke-width="8"/><line x1="50" y1="50" x2="50" y2="10" stroke="currentColor" stroke-width="8" stroke-linecap="round"/><circle cx="50" cy="50" r="8" fill="currentColor"/></svg>
+                </div>
+                <div id="gradAngleDisplay" style="font-weight:700; color:currentColor;">0°</div>
+              </button>
+              <button class="cp-grad-tb-btn" id="tbGradType" title="Toggle Linear/Angular">
+                <!-- Injected via JS -->
+              </button>
+            </div>
+            
+            <div class="cp-grad-colors-hdr">
+              <div class="cp-grad-colors-title">Colors</div>
+              <div style="display:flex; gap:6px;">
+                <button class="cp-grad-btn" id="btnGradMinus" aria-label="Remove Color"><svg viewBox="-1 -1 22 22" style="width:14px; height:14px; fill:currentColor;"><path d="M6.03906 10.9141L14.2969 10.9141C14.7734 10.9141 15.1094 10.6484 15.1094 10.2031C15.1094 9.74219 14.7969 9.46875 14.2969 9.46875L6.03906 9.46875C5.54688 9.46875 5.22656 9.74219 5.22656 10.2031C5.22656 10.6484 5.5625 10.9141 6.03906 10.9141Z"/></svg></button>
+                <button class="cp-grad-btn" id="btnGradPlus" aria-label="Add Color"><svg viewBox="-1 -1 22 22" style="width:14px; height:14px; fill:currentColor;"><path d="M10.8828 14.0469L10.8828 6.28906C10.8828 5.85156 10.5859 5.54688 10.1562 5.54688C9.74219 5.54688 9.44531 5.85156 9.44531 6.28906L9.44531 14.0469C9.44531 14.4766 9.74219 14.7812 10.1562 14.7812C10.5859 14.7812 10.8828 14.4844 10.8828 14.0469ZM6.28906 10.8828L14.0469 10.8828C14.4766 10.8828 14.7812 10.5938 14.7812 10.1797C14.7812 9.74219 14.4844 9.44531 14.0469 9.44531L6.28906 9.44531C5.85156 9.44531 5.55469 9.74219 5.55469 10.1797C5.55469 10.5938 5.85156 10.8828 6.28906 10.8828Z"/></svg></button>
+              </div>
+            </div>
+            
+            <div class="cp-grad-colors-list" id="gradColorsList"></div>
+          </div>
+          
+          <div class="cp-canvas-row" id="cpCanvasRow">
             <div class="cp-track-wrap" id="cpTrackWrap">
               <div class="cp-track-bg mode-wheel" id="cpTrackArea"></div>
               <div class="cp-track-cursor" id="cpTrackCursor"></div>
@@ -284,17 +287,57 @@
           </div>
 
           <div class="cp-presets-grid" id="cpPresetsGrid"></div>
+
+          <!-- Inline Angle Overlay -->
+          <div class="cp-deg-overlay" id="cpDegOverlay">
+            <div class="deg-sheet">
+              <div class="deg-big-wrap">
+                <div id="degBigRotator" class="deg-big-rotator">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="40" fill="transparent" stroke="currentColor" stroke-width="6" style="color:var(--border-strong);" />
+                    <line x1="50" y1="50" x2="50" y2="10" stroke="currentColor" stroke-width="6" stroke-linecap="round" style="color:var(--text-tertiary);" />
+                    <circle cx="50" cy="50" r="6" fill="currentColor" style="color:var(--text-tertiary);" />
+                  </svg>
+                </div>
+              </div>
+              <input id="degAngleInput" class="deg-angle-input" type="text" inputmode="numeric" value="0°" aria-label="Angle in degrees">
+              
+              <div class="preset-row">
+                <button class="preset-btn" type="button" data-deg="0">0°</button>
+                <button class="preset-btn" type="button" data-deg="45">45°</button>
+                <button class="preset-btn" type="button" data-deg="90">90°</button>
+                <button class="preset-btn" type="button" data-deg="135">135°</button>
+                <button class="preset-btn" type="button" data-deg="180">180°</button>
+              </div>
+              <div class="preset-row" style="margin-top:4px;">
+                <button class="preset-btn" type="button" id="btnHInvert" style="flex:1;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048" style="width:14px;height:14px;fill:currentColor;"><path d="M810.54 953.03L161.46 357.3C99.69 300.61 0 344.43 0 428.27v1191.47c0 83.84 99.69 127.66 161.46 70.96l649.08-595.73C852.13 1056.79 852.13 991.2 810.54 953.03z M1237.46 1094.97l649.08 595.73c61.77 56.69 161.46 12.88 161.46-70.96v-1191.47c0-83.84-99.69-127.66-161.46-70.96l-649.08 595.73C1195.87 991.21 1195.87 1056.79 1237.46 1094.97z"/><path d="M1024 95.7v150m0 191.3v150m0 191.3v150m0 191.4v150m0 191.3v150m0 191.4v150" fill="none" stroke="currentColor" stroke-width="83.4" stroke-linecap="round"/></svg></button>
+                <button class="preset-btn" type="button" id="btnVInvert" style="flex:1;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048" style="width:14px;height:14px;fill:currentColor;"><path d="M953.03 1237.46L357.3 1886.54c-56.69 61.77-12.88 161.46 70.96 161.46h1191.47c83.84 0 127.66-99.69 70.96-161.46l-595.73-649.08C1056.79 1195.87 991.2 1195.87 953.03 1237.46z M1094.97 810.54l595.73-649.08C1747.39 99.69 1703.57 0 1619.73 0H428.27c-83.84 0-127.66 99.69-70.96 161.46l595.73 649.08C991.21 852.13 1056.79 852.13 1094.97 810.54z"/><path d="M95.7 1024h150m191.3 0h150m191.3 0h150m191.4 0h150m191.3 0h150m191.4 0h150" fill="none" stroke="currentColor" stroke-width="83.4" stroke-linecap="round"/></svg></button>
+              </div>
+              <button class="preset-btn" id="degCloseBtn" style="margin-top:auto; width:100%; height:30px; background:var(--accent); color:#fff; border:none;">Done</button>
+            </div>
+          </div>
         </div>
 
         <div class="cp-right">
-          <div class="cp-segment-bar">
+          <div class="cp-segment-bar" id="solidRightTabs">
             <div class="cp-segment-btn active" id="btnTabHSB" onclick="setSliderTab('hsb')">HSB</div>
             <div class="cp-segment-btn" id="btnTabHSL" onclick="setSliderTab('hsl')">HSL</div>
           </div>
-          <div class="cp-sliders-wrap" id="cpTopSlidersContainer" style="margin-top: 12px;"></div>
-          <hr class="cp-divider">
-          <div class="cp-section-label">RGB</div>
-          <div class="cp-sliders-wrap" id="cpRgbSlidersContainer" style="margin-bottom: auto;"></div>
+          
+          <div class="cp-segment-bar" id="gradientRightTabs" style="display: none;">
+            <div class="cp-segment-btn active" id="btnGradSliders" onclick="setGradRightTab('sliders')">Sliders</div>
+            <div class="cp-segment-btn" id="btnGradWheel" onclick="setGradRightTab('wheel')">Wheel</div>
+            <div class="cp-segment-btn" id="btnGradSpectrum" onclick="setGradRightTab('spectrum')">Spectrum</div>
+          </div>
+
+          <div id="cpRightCanvasTarget" style="display: none; justify-content: center; padding-top: 12px;"></div>
+
+          <div id="cpSlidersArea">
+            <div class="cp-sliders-wrap" id="cpTopSlidersContainer" style="margin-top: 12px;"></div>
+            <hr class="cp-divider">
+            <div class="cp-section-label">RGB</div>
+            <div class="cp-sliders-wrap" id="cpRgbSlidersContainer" style="margin-bottom: auto;"></div>
+          </div>
         </div>
 
       </div>
@@ -307,7 +350,7 @@
             <input type="text" class="cp-hex-modal-inp" id="cpHexInput" maxlength="6" spellcheck="false">
           </div>
           <div class="cp-eyedropper-btn" id="cpEyedropperBtn" onclick="toggleEyedropper()" title="Eyedropper Tool">
-            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="Layer_2" x="0px" y="0px" viewBox="0 0 24 24" width="18" height="18" data-native-w="24" data-native-h="24" style="transition: none;"><g id="ink-wrapper"><path d="M14.31,7.57l2.11,2.11l-4.29,4.29c-1.47,1.47-3.1,2.78-4.85,3.9L4.09,19.9l2.03-3.18c1.12-1.75,2.43-3.38,3.9-4.85L14.31,7.57M14.31,6.26l-4.95,4.95c-1.52,1.52-2.87,3.2-4.02,5.01l-3.2,5.01v0.62h0.62l5.01-3.2c1.81-1.16,3.49-2.5,5.01-4.02l4.95-4.95L14.31,6.26L14.31,6.26zM21.94,4.16c-0.22-1.04-1.05-1.87-2.09-2.09c-0.93-0.19-1.79,0.09-2.41,0.64l-0.01-0.01l-2.07,2.07l-0.4-0.4l0,0c-0.37-0.37-0.9-0.57-1.48-0.48c-0.72,0.11-1.31,0.7-1.42,1.42c-0.09,0.58,0.11,1.11,0.48,1.48l0,0l4.64,4.64l0,0c0.37,0.37,0.9,0.57,1.48,0.48c0.72-0.11,1.31-0.7,1.42-1.42c0.09-0.58-0.11-1.11-0.48-1.48l0,0l-0.37-0.37l1.95-1.95c0.01-0.01,0.02-0.02,0.02-0.02l0.09-0.09l0,0C21.85,5.95,22.13,5.09,21.94,4.16zM19.27,2.94c0.13,0,0.26,0.01,0.39,0.04c0.68,0.14,1.23,0.69,1.37,1.37c0.12,0.58-0.03,1.16-0.42,1.6l-0.05,0.06l-0.02,0.02l-1.95,1.95l-0.66,0.66l0.66,0.66l0.37,0.37c0.18,0.18,0.26,0.43,0.22,0.68c-0.05,0.32-0.32,0.59-0.64,0.64C18.49,11,18.44,11,18.4,11c-0.21,0-0.4-0.08-0.55-0.23l-4.64-4.64C13.04,5.96,12.96,5.71,13,5.46c0.05-0.32,0.32-0.59,0.64-0.64c0.04-0.01,0.09-0.01,0.13-0.01c0.21,0,0.4,0.08,0.55,0.23l0.4,0.4l0.66,0.66l0.66-0.66l1.95-1.95l0.09-0.08C18.4,3.11,18.83,2.94,19.27,2.94M19.27,2.01c-0.7,0-1.34,0.27-1.82,0.7l-0.01-0.01l-2.07,2.07l-0.4-0.4l0,0c-0.31-0.31-0.74-0.5-1.21-0.5c-0.09,0-0.18,0.01-0.27,0.02c-0.72,0.11-1.31,0.7-1.42,1.42c-0.09,0.58,0.11,1.11,0.48,1.48l0,0l4.64,4.64l0,0c0.31,0.31,0.74,0.5,1.21,0.5c0.09,0,0.18-0.01,0.27-0.02c0.72-0.11,1.31-0.7,1.42-1.42c0.09-0.58-0.11-1.11-0.48-1.48l0,0l-0.37-0.37l1.95-1.95c0.01-0.01,0.02-0.02,0.02-0.02l0.09-0.09l0,0c0.55-0.62,0.83-1.48,0.64-2.41c-0.22-1.04-1.05-1.87-2.09-2.09C19.65,2.03,19.46,2.01,19.27,2.01L19.27,2.01zM2.65,21.92l0.11-0.07l-0.62-0.62l-0.07,0.11C1.83,21.72,2.27,22.16,2.65,21.92z" fill="currentColor" stroke="none"/></g></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" style="transition: none;"><path d="M14.31,7.57l2.11,2.11l-4.29,4.29c-1.47,1.47-3.1,2.78-4.85,3.9L4.09,19.9l2.03-3.18c1.12-1.75,2.43-3.38,3.9-4.85L14.31,7.57M14.31,6.26l-4.95,4.95c-1.52,1.52-2.87,3.2-4.02,5.01l-3.2,5.01v0.62h0.62l5.01-3.2c1.81-1.16,3.49-2.5,5.01-4.02l4.95-4.95L14.31,6.26L14.31,6.26zM21.94,4.16c-0.22-1.04-1.05-1.87-2.09-2.09c-0.93-0.19-1.79,0.09-2.41,0.64l-0.01-0.01l-2.07,2.07l-0.4-0.4l0,0c-0.37-0.37-0.9-0.57-1.48-0.48c-0.72,0.11-1.31,0.7-1.42,1.42c-0.09,0.58,0.11,1.11,0.48,1.48l0,0l4.64,4.64l0,0c0.37,0.37,0.9,0.57,1.48,0.48c0.72-0.11,1.31-0.7,1.42-1.42c0.09-0.58-0.11-1.11-0.48-1.48l0,0l-0.37-0.37l1.95-1.95c0.01-0.01,0.02-0.02,0.02-0.02l0.09-0.09l0,0C21.85,5.95,22.13,5.09,21.94,4.16zM19.27,2.94c0.13,0,0.26,0.01,0.39,0.04c0.68,0.14,1.23,0.69,1.37,1.37c0.12,0.58-0.03,1.16-0.42,1.6l-0.05,0.06l-0.02,0.02l-1.95,1.95l-0.66,0.66l0.66,0.66l0.37,0.37c0.18,0.18,0.26,0.43,0.22,0.68c-0.05,0.32-0.32,0.59-0.64,0.64C18.49,11,18.44,11,18.4,11c-0.21,0-0.4-0.08-0.55-0.23l-4.64-4.64C13.04,5.96,12.96,5.71,13,5.46c0.05-0.32,0.32-0.59,0.64-0.64c0.04-0.01,0.09-0.01,0.13-0.01c0.21,0,0.4,0.08,0.55,0.23l0.4,0.4l0.66,0.66l0.66-0.66l1.95-1.95l0.09-0.08C18.4,3.11,18.83,2.94,19.27,2.94M19.27,2.01c-0.7,0-1.34,0.27-1.82,0.7l-0.01-0.01l-2.07,2.07l-0.4-0.4l0,0c-0.31-0.31-0.74-0.5-1.21-0.5c-0.09,0-0.18,0.01-0.27,0.02c-0.72,0.11-1.31,0.7-1.42,1.42c-0.09,0.58,0.11,1.11,0.48,1.48l0,0l4.64,4.64l0,0c0.31,0.31,0.74,0.5,1.21,0.5c0.09,0,0.18-0.01,0.27-0.02c0.72-0.11,1.31-0.7,1.42-1.42c0.09-0.58-0.11-1.11-0.48-1.48l0,0l-0.37-0.37l1.95-1.95c0.01-0.01,0.02-0.02,0.02-0.02l0.09-0.09l0,0c0.55-0.62,0.83-1.48,0.64-2.41c-0.22-1.04-1.05-1.87-2.09-2.09C19.65,2.03,19.46,2.01,19.27,2.01L19.27,2.01zM2.65,21.92l0.11-0.07l-0.62-0.62l-0.07,0.11C1.83,21.72,2.27,22.16,2.65,21.92z" fill="currentColor" stroke="none"/></svg>
           </div>
         </div>
         
@@ -333,8 +376,55 @@
 
   const cpModal = document.getElementById('cpModalContainer');
   const contextMenu = document.getElementById('cpContextMenu');
+  const gradOpPopup = document.getElementById('cpGradOpPopup');
 
-  // Broadcasts precise modal geometry to parent window for dynamic click-through transparency
+  let cpFillMode = 'solid'; // 'solid' or 'gradient'
+  let gradRightTab = 'sliders'; // 'sliders', 'wheel', 'spectrum'
+  
+  // Gradient State
+  let gradType = 'linear'; // 'linear' or 'angular'
+  let gradAngle = 0;
+  let gradStops = [{hex: '#ff3b30', op: 100}, {hex: '#007aff', op: 100}];
+  let activeStopIdx = 0;
+  let activeGradTrigger = null;
+  
+  const SVG_LINEAR = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22"><defs><linearGradient id="cp-linear-grad-icon" x1="85.28" y1="512" x2="938.72" y2="512" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="currentColor"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs><g transform="translate(0.9089, 0.9089) scale(0.0217, 0.0217)"><path d="M186.43,85.28h651.14c55.83,0,101.15,45.33,101.15,101.15v651.14c0,55.83-45.33,101.15-101.15,101.15H186.43c-55.83,0-101.15-45.33-101.15-101.15V186.43c0-55.83,45.33-101.15,101.15-101.15Z" fill="url(#cp-linear-grad-icon)" stroke="none"/><path d="M837.57,120.28c36.48,0,66.15,29.68,66.15,66.15v651.14c0,36.48-29.68,66.15-66.15,66.15H186.43c-36.48,0-66.15-29.68-66.15-66.15V186.43c0-36.48,29.68-66.15,66.15-66.15h651.14M837.57,50.28H186.43c-75.2,0-136.15,60.96-136.15,136.15v651.14c0,75.2,60.96,136.15,136.15,136.15h651.14c75.2,0,136.15-60.96,136.15-136.15V186.43c0-75.2-60.96-136.15-136.15-136.15h0Z" fill="currentColor" stroke="none"/></g></svg>`;
+
+  const SVG_ANGULAR = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22"><defs><radialGradient id="cp-radial-grad-icon" cx="512" cy="512" r="426.72" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="currentColor" stop-opacity="1"/><stop offset="50%" stop-color="currentColor" stop-opacity="0"/><stop offset="100%" stop-color="currentColor" stop-opacity="1"/></radialGradient></defs><g transform="translate(0.9089, 0.9089) scale(0.0217, 0.0217)"><path d="M186.43,85.28h651.14c55.83,0,101.15,45.33,101.15,101.15v651.14c0,55.83-45.33,101.15-101.15,101.15H186.43c-55.83,0-101.15-45.33-101.15-101.15V186.43c0-55.83,45.33-101.15,101.15-101.15Z" fill="url(#cp-radial-grad-icon)" stroke="none"/><path d="M837.57,120.28c36.48,0,66.15,29.68,66.15,66.15v651.14c0,36.48-29.68,66.15-66.15,66.15H186.43c-36.48,0-66.15-29.68-66.15-66.15V186.43c0-36.48,29.68-66.15,66.15-66.15h651.14M837.57,50.28H186.43c-75.2,0-136.15,60.96-136.15,136.15v651.14c0,75.2,60.96,136.15,136.15,136.15h651.14c75.2,0,136.15-60.96,136.15-136.15V186.43c0-75.2-60.96-136.15-136.15-136.15h0Z" fill="currentColor" stroke="none"/></g></svg>`;
+
+  document.getElementById('tbGradType').innerHTML = SVG_LINEAR;
+
+  function getSendAngle() {
+      if (gradType === 'linear') {
+          return (gradAngle + 180 + 360) % 360; 
+      }
+      return gradAngle;
+  }
+
+  function hexToRgbObj(hex) {
+      let r = parseInt(hex.slice(1,3), 16), g = parseInt(hex.slice(3,5), 16), b = parseInt(hex.slice(5,7), 16);
+      return {r, g, b};
+  }
+
+  function parseStop(str) {
+      if (str.startsWith('rgba')) {
+          let m = str.match(/rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([0-9.]+)\s*\)/);
+          if (m) return { hex: rgbToHex(parseInt(m[1]), parseInt(m[2]), parseInt(m[3])), op: Math.round(parseFloat(m[4])*100) };
+      }
+      if (str.length === 9 && str.startsWith('#')) {
+          return { hex: str.slice(0,7), op: Math.round((parseInt(str.slice(7,9), 16) / 255) * 100) };
+      }
+      return { hex: str.length > 7 ? str.slice(0,7) : str, op: 100 };
+  }
+
+  function getSendStops() {
+      return gradStops.map(s => {
+          if (s.op === 100) return s.hex;
+          let rgb = hexToRgbObj(s.hex);
+          return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${s.op / 100})`;
+      });
+  }
+
   function broadcastState() {
       const rects = [];
       if (document.getElementById('cpModalOverlay').style.display !== 'none') {
@@ -345,15 +435,17 @@
           const r = contextMenu.getBoundingClientRect();
           rects.push({ left: r.left, right: r.right, top: r.top, bottom: r.bottom });
       }
+      if (gradOpPopup.style.display === 'flex') {
+          const r = gradOpPopup.getBoundingClientRect();
+          rects.push({ left: r.left, right: r.right, top: r.top, bottom: r.bottom });
+      }
       const isDragging = document.body.classList.contains('is-dragging') || isDraggingModal;
       window.parent.postMessage({ action: 'cpState', rects, isDragging }, '*');
   }
 
-  // Bind mutation observer to catch slider drags altering the body class
   const bodyObserver = new MutationObserver(broadcastState);
   bodyObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
-  // Stream raw pointer moves so parent can calculate click-through zones
   window.addEventListener('pointermove', e => {
       window.parent.postMessage({ action: 'mouseMove', x: e.clientX, y: e.clientY }, '*');
   });
@@ -369,15 +461,25 @@
   }
 
   document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && isEyedropperActive) toggleEyedropper();
+      if (e.key === 'Escape') {
+          if (document.getElementById('cpDegOverlay').style.display === 'flex') {
+              closeDegOverlay();
+          } else if (isEyedropperActive) {
+              toggleEyedropper();
+          }
+      }
   });
 
   window.addEventListener('message', (event) => {
       if (!event.data) return;
       if (event.data.action === 'open') {
-          openCustomPicker(event.data.hex);
+          openCustomPicker(event.data.data, event.data.isGradient);
       } else if (event.data.action === 'eyedropperPicked' && isEyedropperActive) {
           Object.assign(cpState, hexToHsb(event.data.hex));
+          if (cpFillMode === 'gradient') {
+              gradStops[activeStopIdx].hex = event.data.hex;
+              renderGradRows();
+          }
           renderPicker(true, false);
           toggleEyedropper();
       } else if (event.data.action === 'eyedropperToggle') {
@@ -390,7 +492,9 @@
   function closeCustomPicker() { 
       if (isEyedropperActive) toggleEyedropper();
       document.getElementById('cpModalOverlay').style.display = 'none';
-      hideContextMenu(); 
+      hideContextMenu(); closeDegOverlay();
+      if (gradOpPopup) gradOpPopup.style.display = 'none';
+      if (activeGradTrigger) activeGradTrigger.classList.remove('is-active');
       window.parent.postMessage({ action: 'cancel' }, '*');
       broadcastState();
   }
@@ -398,8 +502,20 @@
   function confirmCustomPicker() { 
       if (isEyedropperActive) toggleEyedropper();
       document.getElementById('cpModalOverlay').style.display = 'none';
-      hideContextMenu();
-      window.parent.postMessage({ action: 'confirm', hex: getHex() }, '*');
+      hideContextMenu(); closeDegOverlay();
+      if (gradOpPopup) gradOpPopup.style.display = 'none';
+      if (activeGradTrigger) activeGradTrigger.classList.remove('is-active');
+      
+      if (cpFillMode === 'gradient') {
+          window.parent.postMessage({ 
+              action: 'confirm', 
+              isGradient: true, 
+              gradientData: { type: gradType, angle: getSendAngle(), stops: getSendStops() }, 
+              hex: getHex() 
+          }, '*');
+      } else {
+          window.parent.postMessage({ action: 'confirm', isGradient: false, hex: getHex() }, '*');
+      }
       broadcastState();
   }
 
@@ -407,7 +523,7 @@
   let isDraggingModal = false, dragStartX, dragStartY, modalStartLeft, modalStartTop;
 
   cpHeader.addEventListener('pointerdown', (e) => {
-      if (e.target.closest('.cp-modal-close')) return;
+      if (e.target.closest('.cp-modal-close') || e.target.closest('.cp-fill-mode-bar')) return;
       isDraggingModal = true;
       dragStartX = e.clientX;
       dragStartY = e.clientY;
@@ -451,7 +567,7 @@
   cpHeader.addEventListener('pointercancel', stopModalDrag);
 
   let cpMode = 'wheel', cpTab = 'hsb', cpState = { h: 0, s: 100, b: 100 };
-  let deleteTargetIndex = null, renderRaf = null, lastSentHex = null;
+  let deleteTargetIndex = null, deleteTargetType = null, renderRaf = null, lastSentHex = null;
   let activeTopSliders = {}, activeRgbSliders = {};
 
   const cpMainWrap = document.getElementById('cpMainWrap');
@@ -515,8 +631,9 @@
       return rgbToHex(rgb.r, rgb.g, rgb.b); 
   }
 
-  function showContextMenu(swatchElement, index) {
+  function showContextMenu(swatchElement, index, type = 'bank') {
       deleteTargetIndex = index;
+      deleteTargetType = type;
       const rect = swatchElement.getBoundingClientRect();
       contextMenu.style.display = 'flex';
       
@@ -541,13 +658,31 @@
 
   document.addEventListener('pointerdown', (e) => {
       if (contextMenu.classList.contains('active') && !contextMenu.contains(e.target)) hideContextMenu();
+      
+      if (gradOpPopup && gradOpPopup.style.display === 'flex' && !gradOpPopup.contains(e.target) && !e.target.closest('.cp-grad-slider-trigger')) {
+          gradOpPopup.style.display = 'none';
+          if (activeGradTrigger) activeGradTrigger.classList.remove('is-active');
+          broadcastState();
+      }
   });
 
   function executeDelete() {
       if (deleteTargetIndex !== null) {
-          savedBank.splice(deleteTargetIndex, 1);
-          try { localStorage.setItem('pixelForgeSavedColors', JSON.stringify(savedBank)); } catch(e){}
-          hideContextMenu(); deleteTargetIndex = null; renderSavedBank();
+          if (deleteTargetType === 'bank') {
+              savedBank.splice(deleteTargetIndex, 1);
+              try { localStorage.setItem('pixelForgeSavedColors', JSON.stringify(savedBank)); } catch(e){}
+              renderSavedBank();
+          } else if (deleteTargetType === 'grad') {
+              if (gradStops.length > 2) {
+                  gradStops.splice(deleteTargetIndex, 1);
+                  if (activeStopIdx >= gradStops.length) activeStopIdx = gradStops.length - 1;
+                  renderGradRows();
+                  performGradientUpdate(false);
+                  Object.assign(cpState, hexToHsb(gradStops[activeStopIdx].hex));
+                  renderPicker(true, false);
+              }
+          }
+          hideContextMenu(); deleteTargetIndex = null; deleteTargetType = null;
       }
   }
 
@@ -563,14 +698,21 @@
               
               swatch.onclick = () => { 
                   if (longPressed) { longPressed = false; return; }
-                  Object.assign(cpState, hexToHsb(hex)); renderPicker(true, false); 
+                  Object.assign(cpState, hexToHsb(hex)); 
+                  
+                  if (cpFillMode === 'gradient') {
+                      gradStops[activeStopIdx].hex = hex;
+                      gradStops[activeStopIdx].op = 100;
+                      renderGradRows();
+                  }
+                  renderPicker(true, false); 
               };
-              swatch.oncontextmenu = (e) => { e.preventDefault(); showContextMenu(swatch, i); };
+              swatch.oncontextmenu = (e) => { e.preventDefault(); showContextMenu(swatch, i, 'bank'); };
               
               const startPress = (e) => {
                   if (e.touches && e.touches.length > 1) return;
                   isDragging = false;
-                  pressTimer = window.setTimeout(() => { longPressed = true; showContextMenu(swatch, i); }, 500);
+                  pressTimer = window.setTimeout(() => { longPressed = true; showContextMenu(swatch, i, 'bank'); }, 500);
               };
               const cancelPress = () => { if(pressTimer) clearTimeout(pressTimer); };
               const markDrag = () => { isDragging = true; cancelPress(); };
@@ -600,30 +742,135 @@
       colors.forEach(hex => {
           const swatch = document.createElement('div');
           swatch.className = 'cp-preset-swatch'; swatch.style.backgroundColor = hex;
-          swatch.onclick = () => { Object.assign(cpState, hexToHsb(hex)); renderPicker(true, false); };
+          swatch.onclick = () => { 
+              Object.assign(cpState, hexToHsb(hex)); 
+              if (cpFillMode === 'gradient') {
+                  gradStops[activeStopIdx].hex = hex;
+                  gradStops[activeStopIdx].op = 100;
+                  renderGradRows();
+              }
+              renderPicker(true, false); 
+          };
           grid.appendChild(swatch);
       });
   }
 
-  function openCustomPicker(initialHex) {
-      cpModal.style.position = '';
-      cpModal.style.left = '';
-      cpModal.style.top = '';
-      cpModal.style.margin = '';
-      
+  function openCustomPicker(initialData, isGradient) {
+      cpModal.style.position = ''; cpModal.style.left = ''; cpModal.style.top = ''; cpModal.style.margin = '';
       if (isEyedropperActive) toggleEyedropper();
+      closeDegOverlay();
+      if (gradOpPopup) gradOpPopup.style.display = 'none';
+      if (activeGradTrigger) activeGradTrigger.classList.remove('is-active');
+      
+      if (isGradient && typeof initialData === 'object' && initialData !== null) {
+          gradType = initialData.type || 'linear';
+          let incomingAngle = initialData.angle || 0;
+          if (gradType === 'linear') {
+              gradAngle = (incomingAngle + 180 + 360) % 360;
+          } else {
+              gradAngle = incomingAngle;
+          }
+          gradStops = [...(initialData.stops || ['#ff3b30', '#007aff'])].map(parseStop);
+          activeStopIdx = 0;
+          updateAngleUI();
+          document.getElementById('tbGradType').innerHTML = gradType === 'linear' ? SVG_LINEAR : SVG_ANGULAR;
+          Object.assign(cpState, hexToHsb(gradStops[activeStopIdx].hex));
+      } else if (isGradient) {
+          gradType = 'linear';
+          gradAngle = 0;
+          gradStops = [{hex: '#ff3b30', op: 100}, {hex: '#007aff', op: 100}];
+          activeStopIdx = 0;
+          updateAngleUI();
+          document.getElementById('tbGradType').innerHTML = SVG_LINEAR;
+          Object.assign(cpState, hexToHsb(gradStops[activeStopIdx].hex));
+      } else {
+          let h = (typeof initialData === 'string' && !initialData.includes('url')) ? initialData : '#000000';
+          Object.assign(cpState, hexToHsb(h));
+      }
 
-      cpState = hexToHsb(initialHex || '#000000');
+      setFillMode(isGradient ? 'gradient' : 'solid'); 
       setPickerMode('wheel'); setSliderTab('hsb');       
       document.getElementById('cpModalOverlay').style.display = 'flex';
       renderPicker(true, false);
       requestAnimationFrame(broadcastState);
   }
 
+  function setFillMode(mode) {
+      cpFillMode = mode;
+      document.getElementById('btnModeSolid').classList.toggle('active', mode === 'solid');
+      document.getElementById('btnModeGradient').classList.toggle('active', mode === 'gradient');
+
+      const canvasRow = document.getElementById('cpCanvasRow');
+      const leftPanel = document.getElementById('cpLeftPanel');
+      const presets = document.getElementById('cpPresetsGrid');
+      const gradEditor = document.getElementById('gradientEditorArea');
+
+      if (mode === 'solid') {
+          document.getElementById('solidLeftTabs').style.display = 'flex';
+          gradEditor.style.display = 'none';
+          
+          document.getElementById('solidRightTabs').style.display = 'flex';
+          document.getElementById('gradientRightTabs').style.display = 'none';
+          
+          document.getElementById('cpSlidersArea').style.display = 'block';
+          document.getElementById('cpRightCanvasTarget').style.display = 'none';
+
+          leftPanel.insertBefore(canvasRow, presets);
+          canvasRow.style.display = 'flex';
+
+          setPickerMode(cpMode);
+          setSliderTab(cpTab);
+          
+          Object.assign(cpState, hexToHsb(getHex())); 
+          renderPicker(true, false);
+      } else {
+          document.getElementById('solidLeftTabs').style.display = 'none';
+          gradEditor.style.display = 'flex';
+          
+          document.getElementById('solidRightTabs').style.display = 'none';
+          document.getElementById('gradientRightTabs').style.display = 'flex';
+
+          setGradRightTab(gradRightTab);
+          
+          renderGradRows();
+          Object.assign(cpState, hexToHsb(gradStops[activeStopIdx].hex));
+          renderPicker(true, false);
+      }
+  }
+
+  function setGradRightTab(tab) {
+      gradRightTab = tab;
+      document.getElementById('btnGradSliders').classList.toggle('active', tab === 'sliders');
+      document.getElementById('btnGradWheel').classList.toggle('active', tab === 'wheel');
+      document.getElementById('btnGradSpectrum').classList.toggle('active', tab === 'spectrum');
+
+      const canvasRow = document.getElementById('cpCanvasRow');
+      const rightTarget = document.getElementById('cpRightCanvasTarget');
+
+      if (tab === 'sliders') {
+          document.getElementById('cpSlidersArea').style.display = 'block';
+          rightTarget.style.display = 'none';
+          canvasRow.style.display = 'none';
+          setSliderTab('hsb');
+      } else {
+          document.getElementById('cpSlidersArea').style.display = 'none';
+          rightTarget.style.display = 'flex';
+          rightTarget.appendChild(canvasRow);
+          canvasRow.style.display = 'flex';
+          setPickerMode(tab); 
+      }
+  }
+
   function setPickerMode(mode) {
       cpMode = mode;
+      
       document.getElementById('btnModeSpectrum').classList.toggle('active', mode === 'spectrum');
       document.getElementById('btnModeWheel').classList.toggle('active', mode === 'wheel');
+
+      if (cpFillMode === 'gradient' && gradRightTab !== 'sliders') {
+          document.getElementById('btnGradWheel').classList.toggle('active', mode === 'wheel');
+          document.getElementById('btnGradSpectrum').classList.toggle('active', mode === 'spectrum');
+      }
       
       if (mode === 'wheel') {
           cpMainWrap.style.borderRadius = '50%';
@@ -642,216 +889,29 @@
       renderPicker(true, false);
   }
 
-  // --- Highly Optimized rAF Render Pipeline ---
-  function renderPicker(rebuildSliders = false, isScrubbing = false) {
-      if (renderRaf) cancelAnimationFrame(renderRaf);
-      renderRaf = requestAnimationFrame(() => performRender(rebuildSliders, isScrubbing));
+  // --- Gradient Logic ---
+
+  function normalizeAngleDeg(raw){
+      let a = Number(raw); if (!Number.isFinite(a)) a = 0;
+      if (a === 360 || a === -360) return 0;
+      a = a % 360; if (a === 0) return 0;
+      a = Math.trunc(a);
+      if (a > 359) a = 359; if (a < -359) a = -359;
+      return a;
   }
 
-  function performRender(rebuildSliders, isScrubbing) {
-      updateVisuals(); updateCursors(); updateFooter(); 
-      if (rebuildSliders) buildSlidersDOM();
-      updateSlidersUI();
-      
-      const currentHex = getHex();
-      if (currentHex !== lastSentHex || isScrubbing) {
-          lastSentHex = currentHex;
-          window.parent.postMessage({ action: 'update', hex: currentHex, isScrubbing: isScrubbing }, '*');
-      }
+  function updateAngleUI() {
+      document.getElementById('gradAngleDisplay').textContent = `${gradAngle}°`;
+      document.getElementById('gradAngleRotator').style.transform = `rotate(${gradAngle}deg)`;
+      document.getElementById('degBigRotator').style.transform = `rotate(${gradAngle}deg)`;
+      document.getElementById('degAngleInput').value = `${gradAngle}°`;
   }
 
-  // CSS Accelerated GPU Backgrounds 
-  function updateVisuals() {
-      if (cpMode === 'spectrum') {
-          cpMainArea.className = 'cp-main-bg mode-spectrum';
-          cpTrackArea.className = 'cp-track-bg mode-spectrum';
-          cpMainArea.style.background = `linear-gradient(to top, #000, rgba(0,0,0,0)), linear-gradient(to right, #fff, rgba(255,255,255,0)), hsl(${cpState.h}, 100%, 50%)`;
-          cpMainDarken.style.opacity = 0;
-          cpTrackArea.style.background = ''; // Reverts to CSS class gradients
-      } else {
-          cpMainArea.className = 'cp-main-bg mode-wheel';
-          cpTrackArea.className = 'cp-track-bg mode-wheel';
-          cpMainArea.style.background = ''; // Reverts to CSS conic gradient
-          cpMainDarken.style.opacity = 1 - (cpState.b / 100);
-          
-          const pureRgb = hsbToRgb(cpState.h, cpState.s, 100);
-          cpTrackArea.style.background = `linear-gradient(to bottom, rgb(${pureRgb.r},${pureRgb.g},${pureRgb.b}), #000)`;
-      }
+  function setAngleDeg(deg) {
+      gradAngle = normalizeAngleDeg(deg);
+      updateAngleUI();
+      performGradientUpdate(false);
   }
 
-  function updateCursors() {
-      const c1 = document.getElementById('cpMainCursor'), c2 = document.getElementById('cpTrackCursor');
-      const w1 = 200, h1 = 200, h2 = 200; // Static DOM mapped widths
-      
-      if (cpMode === 'spectrum') {
-          c1.style.left = `${(cpState.s/100)*w1}px`; c1.style.top = `${h1 - (cpState.b/100)*h1}px`;
-          c2.style.top = `${(cpState.h/360)*h2}px`;
-      } else {
-          let a = (cpState.h - 90) * (Math.PI/180), r = (cpState.s/100) * (w1/2);
-          c1.style.left = `${(w1/2) + Math.cos(a)*r}px`; c1.style.top = `${(w1/2) + Math.sin(a)*r}px`;
-          c2.style.top = `${(1 - cpState.b/100)*h2}px`;
-      }
-  }
-
-  function updateFooter() {
-      const hex = getHex();
-      document.getElementById('cpSwatchNew').style.backgroundColor = hex;
-      if (document.activeElement !== document.getElementById('cpHexInput')) {
-          document.getElementById('cpHexInput').value = hex.replace('#', '');
-      }
-  }
-
-  function setupAppLikeInput(inp) {
-      let isFirstType = false;
-      inp.addEventListener('focus', function() { this.classList.add('app-input-grey'); isFirstType = true; setTimeout(() => this.select(), 0); });
-      inp.addEventListener('keydown', function(e) { if (isFirstType && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) { this.value = ''; this.classList.remove('app-input-grey'); isFirstType = false; }});
-      inp.addEventListener('input', function() { this.classList.remove('app-input-grey'); isFirstType = false; });
-      inp.addEventListener('blur', function() { this.classList.remove('app-input-grey'); isFirstType = false; window.getSelection().removeAllRanges(); });
-  }
-
-  setupAppLikeInput(document.getElementById('cpHexInput'));
-  document.getElementById('cpHexInput').addEventListener('change', (e) => {
-      let val = e.target.value.replace('#', '');
-      if (/^[0-9A-Fa-f]{3}$/.test(val)) val = val.split('').map(c=>c+c).join('');
-      if (/^[0-9A-Fa-f]{6}$/.test(val)) { Object.assign(cpState, hexToHsb('#'+val)); renderPicker(true, false); }
-      else e.target.value = getHex().replace('#', '');
-  });
-
-  function buildSlidersDOM() {
-      const topContainer = document.getElementById('cpTopSlidersContainer'), rgbContainer = document.getElementById('cpRgbSlidersContainer');
-      topContainer.innerHTML = ''; rgbContainer.innerHTML = '';
-      activeTopSliders = {}; activeRgbSliders = {};
-      
-      const buildRow = (id, label, min, max, callback, containerDOM, targetObj) => {
-          const row = document.createElement('div'); row.className = 'cp-slider-row';
-          const lbl = document.createElement('div'); lbl.className = 'cp-slider-lbl'; lbl.textContent = label;
-          const rng = document.createElement('input'); rng.type = 'range'; rng.className = 'cp-slider-inp'; rng.min = min; rng.max = max; rng.step = 'any'; 
-          const num = document.createElement('input'); num.type = 'number'; num.className = 'cp-num-inp'; num.min = min; num.max = max;
-          setupAppLikeInput(num); targetObj[id] = { rng, num };
-
-          // Pointer interactions map the active dragging pointer global state
-          rng.addEventListener('pointerdown', () => document.body.classList.add('is-dragging'));
-          rng.addEventListener('pointerup', () => document.body.classList.remove('is-dragging'));
-          rng.addEventListener('pointercancel', () => document.body.classList.remove('is-dragging'));
-
-          const sync = (v, isNumInput, isScrubbing = false) => { 
-              let valFloat = Math.min(max, Math.max(min, isNaN(parseFloat(v)) ? 0 : parseFloat(v))); 
-              if (isNumInput) rng.value = valFloat; else num.value = Math.round(valFloat);
-              callback(valFloat); renderPicker(false, isScrubbing); 
-          };
-          
-          rng.addEventListener('input', (e) => sync(e.target.value, false, true));
-          rng.addEventListener('change', (e) => sync(e.target.value, false, false));
-          num.addEventListener('input', (e) => sync(e.target.value, true, true));
-          num.addEventListener('change', (e) => sync(e.target.value, true, false));
-
-          row.addEventListener('wheel', (e) => {
-              e.preventDefault();
-              let val = isNaN(parseFloat(num.value)) ? 0 : parseFloat(num.value);
-              val += (Math.abs(e.deltaX) > Math.abs(e.deltaY) ? Math.sign(e.deltaX) : -Math.sign(e.deltaY)) * (e.shiftKey ? 10 : 1);
-              sync(val, true, false);
-          }, { passive: false });
-
-          row.appendChild(lbl); row.appendChild(rng); row.appendChild(num); containerDOM.appendChild(row);
-      };
-
-      if (cpTab === 'hsb') {
-          buildRow('h', 'H', 0, 360, (v) => { cpState.h = v; }, topContainer, activeTopSliders);
-          buildRow('s', 'S', 0, 100, (v) => { cpState.s = v; }, topContainer, activeTopSliders);
-          buildRow('b', 'B', 0, 100, (v) => { cpState.b = v; }, topContainer, activeTopSliders);
-      } else if (cpTab === 'hsl') {
-          buildRow('h', 'H', 0, 360, (v) => { let c = hsbToHsl(cpState.h, cpState.s, cpState.b); Object.assign(cpState, hslToHsb(v, c.s, c.l, cpState.h, cpState.s)); }, topContainer, activeTopSliders);
-          buildRow('s', 'S', 0, 100, (v) => { let c = hsbToHsl(cpState.h, cpState.s, cpState.b); Object.assign(cpState, hslToHsb(c.h, v, c.l, cpState.h, cpState.s)); }, topContainer, activeTopSliders);
-          buildRow('l', 'L', 0, 100, (v) => { let c = hsbToHsl(cpState.h, cpState.s, cpState.b); Object.assign(cpState, hslToHsb(c.h, c.s, v, cpState.h, cpState.s)); }, topContainer, activeTopSliders);
-      }
-      buildRow('r', 'R', 0, 255, (v) => { let c = hsbToRgb(cpState.h, cpState.s, cpState.b); Object.assign(cpState, rgbToHsb(v, c.g, c.b, cpState.h, cpState.s)); }, rgbContainer, activeRgbSliders);
-      buildRow('g', 'G', 0, 255, (v) => { let c = hsbToRgb(cpState.h, cpState.s, cpState.b); Object.assign(cpState, rgbToHsb(c.r, v, c.b, cpState.h, cpState.s)); }, rgbContainer, activeRgbSliders);
-      buildRow('b', 'B', 0, 255, (v) => { let c = hsbToRgb(cpState.h, cpState.s, cpState.b); Object.assign(cpState, rgbToHsb(c.r, c.g, v, cpState.h, cpState.s)); }, rgbContainer, activeRgbSliders);
-  }
-
-  function updateSlidersUI() {
-      const setVal = (inp, val) => { if (document.activeElement !== inp) inp.value = val; };
-      if (cpTab === 'hsb' && activeTopSliders.h) {
-          setVal(activeTopSliders.h.rng, cpState.h); setVal(activeTopSliders.h.num, Math.round(cpState.h));
-          setVal(activeTopSliders.s.rng, cpState.s); setVal(activeTopSliders.s.num, Math.round(cpState.s));
-          setVal(activeTopSliders.b.rng, cpState.b); setVal(activeTopSliders.b.num, Math.round(cpState.b));
-          
-          activeTopSliders.h.rng.style.setProperty('--slider-bg', 'linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)');
-          activeTopSliders.s.rng.style.setProperty('--slider-bg', `linear-gradient(to right, ${rgbToHex(hsbToRgb(cpState.h,0,cpState.b).r, hsbToRgb(cpState.h,0,cpState.b).g, hsbToRgb(cpState.h,0,cpState.b).b)}, ${rgbToHex(hsbToRgb(cpState.h,100,cpState.b).r, hsbToRgb(cpState.h,100,cpState.b).g, hsbToRgb(cpState.h,100,cpState.b).b)})`);
-          activeTopSliders.b.rng.style.setProperty('--slider-bg', `linear-gradient(to right, #000, ${rgbToHex(hsbToRgb(cpState.h,cpState.s,100).r, hsbToRgb(cpState.h,cpState.s,100).g, hsbToRgb(cpState.h,cpState.s,100).b)})`);
-      } else if (cpTab === 'hsl' && activeTopSliders.h) {
-          let c = hsbToHsl(cpState.h, cpState.s, cpState.b);
-          setVal(activeTopSliders.h.rng, c.h); setVal(activeTopSliders.h.num, Math.round(c.h));
-          setVal(activeTopSliders.s.rng, c.s); setVal(activeTopSliders.s.num, Math.round(c.s));
-          setVal(activeTopSliders.l.rng, c.l); setVal(activeTopSliders.l.num, Math.round(c.l));
-          
-          let hInt = Math.round(c.h), sInt = Math.round(c.s), lInt = Math.round(c.l);
-          activeTopSliders.h.rng.style.setProperty('--slider-bg', 'linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)');
-          activeTopSliders.s.rng.style.setProperty('--slider-bg', `linear-gradient(to right, hsl(${hInt}, 0%, ${lInt}%), hsl(${hInt}, 100%, ${lInt}%))`);
-          activeTopSliders.l.rng.style.setProperty('--slider-bg', `linear-gradient(to right, #000, hsl(${hInt}, ${sInt}%, 50%), #fff)`);
-      }
-      if (activeRgbSliders.r) {
-          let c = hsbToRgb(cpState.h, cpState.s, cpState.b);
-          setVal(activeRgbSliders.r.rng, c.r); setVal(activeRgbSliders.r.num, Math.round(c.r));
-          setVal(activeRgbSliders.g.rng, c.g); setVal(activeRgbSliders.g.num, Math.round(c.g));
-          setVal(activeRgbSliders.b.rng, c.b); setVal(activeRgbSliders.b.num, Math.round(c.b));
-          
-          let rInt = Math.round(c.r), gInt = Math.round(c.g), bInt = Math.round(c.b);
-          activeRgbSliders.r.rng.style.setProperty('--slider-bg', `linear-gradient(to right, rgb(0,${gInt},${bInt}), rgb(255,${gInt},${bInt}))`);
-          activeRgbSliders.g.rng.style.setProperty('--slider-bg', `linear-gradient(to right, rgb(${rInt},0,${bInt}), rgb(${rInt},255,${bInt}))`);
-          activeRgbSliders.b.rng.style.setProperty('--slider-bg', `linear-gradient(to right, rgb(${rInt},${gInt},0), rgb(${rInt},${gInt},255))`);
-      }
-  }
-
-  // Optimized Touch/Mouse Unified PointerEvents
-  function bindPointerDrag(el, callback) {
-      let isDragging = false;
-      const handleEvent = (e) => {
-          const rect = el.getBoundingClientRect();
-          callback(e.clientX - rect.left, e.clientY - rect.top, rect.width, rect.height);
-      };
-      el.addEventListener('pointerdown', (e) => { document.body.classList.add('is-dragging'); el.setPointerCapture(e.pointerId); isDragging = true; handleEvent(e); });
-      el.addEventListener('pointermove', (e) => { if (isDragging) handleEvent(e); });
-      const stop = (e) => { document.body.classList.remove('is-dragging'); isDragging = false; el.releasePointerCapture(e.pointerId); };
-      el.addEventListener('pointerup', stop);
-      el.addEventListener('pointercancel', stop);
-  }
-
-  bindPointerDrag(document.getElementById('cpMainWrap'), (x, y, w, h) => {
-      x = Math.max(0, Math.min(w, x)); y = Math.max(0, Math.min(h, y));
-      if (cpMode === 'spectrum') {
-          cpState.s = (x / w) * 100; cpState.b = 100 - (y / h) * 100;
-      } else {
-          let cx = w/2, cy = h/2, cr = w/2;
-          let dx = x - cx, dy = y - cy, a = Math.atan2(dy, dx) * (180/Math.PI) + 90;
-          if (a < 0) a += 360;
-          cpState.h = a; cpState.s = Math.min(100, (Math.sqrt(dx*dx + dy*dy) / cr) * 100);
-      }
-      renderPicker(false, true);
-  });
-
-  bindPointerDrag(document.getElementById('cpTrackWrap'), (x, y, w, h) => {
-      let pct = (Math.max(0, Math.min(h, y)) / h) * 100;
-      if (cpMode === 'spectrum') cpState.h = (pct/100)*360; else cpState.b = 100 - pct;
-      renderPicker(false, true);
-  });
-  
-  document.getElementById('cpTrackWrap').addEventListener('wheel', (e) => {
-      e.preventDefault();
-      let delta = Math.sign(e.deltaY) || Math.sign(e.deltaX);
-      if (delta === 0) return;
-      let step = e.shiftKey ? 10 : 1;
-      
-      if (cpMode === 'spectrum') {
-          cpState.h = Math.max(0, Math.min(360, cpState.h + (delta * step * 3.6)));
-      } else {
-          cpState.b = Math.max(0, Math.min(100, cpState.b - (delta * step)));
-      }
-      renderPicker(false, false);
-  }, { passive: false });
-
-  initPresets();
-  renderSavedBank(); 
-</script>
-</body>
-</html>
+  document.getElementById('tbGradType').addEventListener('click', () => {
+      gradType = (gradType ===

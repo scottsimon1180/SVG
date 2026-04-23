@@ -3,8 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="apple-touch-icon" href="IOS-icon.png">
-<title>SVG HTML/Web Optimizer</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="images/logo-1024.png">
+<link rel="apple-touch-icon" href="images/logo-1024.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SVG Tool">
+<meta name="theme-color" content="#1a1a1e">
+<title>SVG Tool</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body class="mode-mono">
@@ -158,20 +164,80 @@
       </div>
 
       <div class="panel">
-        <h3 class="panel-header">Export</h3>
-        <div class="controls">
-          <button class="opt-btn" onclick="copyOutput(this)" style="justify-content: flex-start; width: 172px;">
+        <div class="panel-header-row">
+          <h3 class="panel-header">Export</h3>
+          <div class="export-format-toggle">
+            <label class="radio-label"><input type="radio" name="exportFormat" value="svg" checked onchange="toggleExportFormat()"> <span class="radio-custom"></span> SVG</label>
+            <label class="radio-label"><input type="radio" name="exportFormat" value="png" onchange="toggleExportFormat()"> <span class="radio-custom"></span> PNG</label>
+          </div>
+        </div>
+        <div class="controls" id="exportControlsWrapper" style="flex-wrap: wrap;">
+          <button id="btnCopyExport" class="opt-btn" onclick="copyOutput(this)" style="justify-content: flex-start; width: 172px;">
             <svg class="icon-svg"><use href="#icon-copy" xlink:href="#icon-copy"></use></svg> <span style="width: 100%; text-align: left;">Copy to Clipboard</span>
           </button>
-          <button class="opt-btn" onclick="downloadSVG()">
-            <svg class="icon-svg"><use href="#icon-share" xlink:href="#icon-share"></use></svg> Save .svg
+          <button id="btnSaveExport" class="opt-btn" onclick="executeExport()">
+            <svg class="icon-svg"><use href="#icon-share" xlink:href="#icon-share"></use></svg> <span>Save .svg</span>
           </button>
         </div>
+        
         <div class="textarea-wrap" id="exportWrap">
           <textarea id="outputStr" readonly placeholder="Optimized HTML-ready SVG will appear here..."></textarea>
           <div class="custom-scroll-track">
             <div class="custom-scroll-thumb"></div>
           </div>
+        </div>
+
+        <div class="png-framed-wrap" id="pngExportWrap" style="display: none;">
+            <div class="png-left-col">
+                
+                <div class="dim-header-row">
+                    <span class="dim-label">SIZE</span>
+                    <label class="cb-label">
+                      <input type="checkbox" id="pngHoldRes" onchange="handlePngHoldToggle(this.checked)"> <span class="cb-custom"></span> Hold
+                    </label>
+                </div>
+                
+                <div class="dim-row">
+                    <span class="sub-label">Width:</span>
+                    <div class="dim-group">
+                        <input type="number" id="pngW" class="dim-input" oninput="handlePngDimChange('w')">
+                        <span class="dim-unit">px</span>
+                    </div>
+                </div>
+                <div class="dim-row">
+                    <span class="sub-label">Height:</span>
+                    <div class="dim-group">
+                        <input type="number" id="pngH" class="dim-input" oninput="handlePngDimChange('h')">
+                        <span class="dim-unit">px</span>
+                    </div>
+                </div>
+                
+                <div class="png-divider"></div>
+                
+                <div class="bg-header-row">
+                    <span class="dim-label">BACKGROUND</span>
+                    <label class="cb-label">
+                      <input type="checkbox" id="pngClipBounds" onchange="handlePngClipToggle(this.checked)"> <span class="cb-custom"></span> Clip to Ink Bounds
+                    </label>
+                </div>
+                
+                <div class="bg-preset-row">
+                    <button class="bg-preset-btn active bg-transparent-btn checkerboard-bg" data-bg="transparent" onclick="setPngBg('transparent')" title="Transparent"></button>
+                    <button class="bg-preset-btn" data-bg="#000000" onclick="setPngBg('#000000')" title="Black" style="background: #000000;"></button>
+                    <button class="bg-preset-btn" data-bg="#ffffff" onclick="setPngBg('#ffffff')" title="White" style="background: #ffffff;"></button>
+                    
+                    <button class="bg-preset-btn" id="btnCustomPngBg" onclick="openPngBgPicker()" title="Custom Color/Gradient">
+                        <div class="png-picker-center" id="customPngBgCenter"></div>
+                    </button>
+                </div>
+                
+            </div>
+            
+            <div class="png-right-col">
+                <div class="png-preview-box" id="pngPreviewBox">
+                    <img id="pngPreviewImg" class="checkerboard-bg">
+                </div>
+            </div>
         </div>
       </div>
     </div>
