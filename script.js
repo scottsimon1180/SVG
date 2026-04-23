@@ -158,14 +158,15 @@ const initCustomScroll = (contentEl, wrapEl) => {
         smoothRAF = requestAnimationFrame(easeTick);
     };
     const normalizeDelta = (e) => {
-        // DOM_DELTA_LINE (1) and DOM_DELTA_PAGE (2) appear on some browsers/devices
-        // (notably Firefox and iPad Safari with external mice). Convert to pixels.
         let dy = e.deltaY;
-        if (e.deltaMode === 1) dy *= 16;       // line -> ~16px
-        else if (e.deltaMode === 2) dy *= contentEl.clientHeight; // page
+        if (e.deltaMode === 1) dy *= 16;
+        else if (e.deltaMode === 2) dy *= contentEl.clientHeight;
         return dy;
     };
     const onWheel = (e) => {
+        // Fire only when the pointer is over this panel's wrap or track.
+        const t = e.target;
+        if (!(wrapEl.contains(t) || track.contains(t) || t === contentEl)) return;
         const sh = contentEl.scrollHeight, ch = contentEl.clientHeight;
         if (sh <= ch + 1) return;
         const dy = normalizeDelta(e);
@@ -176,14 +177,16 @@ const initCustomScroll = (contentEl, wrapEl) => {
         const atBottom = base >= maxScroll - 0.5;
         if ((dy < 0 && atTop) || (dy > 0 && atBottom)) return;
         e.preventDefault();
+        e.stopPropagation();
         smoothTarget = Math.max(0, Math.min(maxScroll, base + dy));
         showScroll();
         if (!smoothRAF) smoothRAF = requestAnimationFrame(easeTick);
     };
-    // Capture phase so we intercept before textareas/inputs consume the event
-    // (iPad Safari with external mouse lets textareas swallow wheel otherwise).
-    wrapEl.addEventListener('wheel', onWheel, { passive: false, capture: true });
-    track.addEventListener('wheel', onWheel, { passive: false });
+    // Document-level capture: iPadOS + Bluetooth mouse routes wheel events to
+    // the innermost scrollable element (often the textarea), bypassing wrap-level
+    // listeners. Capturing at document ensures we intercept before Safari's
+    // composited scroll pipeline consumes the event.
+    document.addEventListener('wheel', onWheel, { passive: false, capture: true });
 
     track.addEventListener('pointerenter', () => {
         const sh = contentEl.scrollHeight, ch = contentEl.clientHeight;

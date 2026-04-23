@@ -63,7 +63,7 @@ textarea:focus { border-color:var(--border-strong); }
 .detail-item strong { color:var(--text); font-weight:600; font-family:monospace; }
 
 .layers-wrap { position:relative; flex:1; min-height:0; display:flex; }
-.layers-list { flex:1; overflow-y:auto; overflow-x:auto; -webkit-overflow-scrolling:touch; touch-action:pan-y !important; overscroll-behavior-y:contain; display:flex; flex-direction:column; gap:8px; padding-right:0; min-height:0; -ms-overflow-style:none; scrollbar-width:none; }
+.layers-list { flex:1; overflow-y:auto; overflow-x:auto; touch-action:pan-y !important; overscroll-behavior-y:contain; display:flex; flex-direction:column; gap:8px; padding-right:0; min-height:0; -ms-overflow-style:none; scrollbar-width:none; }
 .layers-list::-webkit-scrollbar { display:none; width:0; height:0; }
 
 .custom-scroll-track { position:absolute; top:2px; bottom:2px; right:-16px; width:16px; pointer-events:auto; z-index:10; display:flex; justify-content:center; }
